@@ -144,7 +144,14 @@
         function updateTotals() {
             let total = 0;
             document.querySelectorAll('.attribute-input').forEach(input => {
-                const value = parseInt(input.value);
+                let value = parseInt(input.value);
+                
+                // Handle invalid/empty inputs
+                if (isNaN(value)) value = 35;
+                
+                // Clamp values between 35-99 for calculation
+                value = Math.min(Math.max(value, 35), 99);
+                
                 const tpeCost = calculateTPE(value);
                 input.parentElement.querySelector('.tpe-cost').textContent = tpeCost;
                 total += tpeCost;
@@ -154,10 +161,18 @@
 
         // Event listeners
         document.querySelectorAll('.attribute-input').forEach(input => {
-            input.addEventListener('input', () => {
+            // Allow free-form typing
+            input.addEventListener('input', updateTotals);
+            
+            // Validate and clamp values when focus is lost
+            input.addEventListener('blur', () => {
                 let value = parseInt(input.value);
-                if (value < 35) input.value = 35;
-                if (value > 99) input.value = 99;
+                
+                if (isNaN(value)) {
+                    input.value = 35;
+                } else {
+                    input.value = Math.min(Math.max(value, 35), 99);
+                }
                 updateTotals();
             });
         });
