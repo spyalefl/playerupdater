@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Attribute Updater</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        .attribute-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .attribute-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .attribute-name {
+            flex: 1;
+            font-weight: bold;
+        }
+
+        input[type="number"] {
+            width: 70px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .tpe-cost {
+            width: 60px;
+            text-align: right;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .total-tpe {
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #27ae60;
+            padding: 15px;
+            background-color: #e8f5e9;
+            border-radius: 5px;
+        }
+
+        .instructions {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #e3f2fd;
+            border-radius: 5px;
+            color: #0d47a1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Player Attribute Updater</h1>
+        
+        <div class="instructions">
+            <strong>Upgrade Costs:</strong><br>
+            35-50: 1 TPE per point<br>
+            50-60: 2 TPE per point<br>
+            60-70: 3 TPE per point<br>
+            70-80: 4 TPE per point<br>
+            80-85: 5 TPE per point<br>
+            85-90: 12 TPE per point<br>
+            90-95: 18 TPE per point<br>
+            95-99: 24 TPE per point
+        </div>
+
+        <div class="attribute-grid" id="attributesGrid">
+            <!-- Attributes will be inserted here -->
+        </div>
+
+        <div class="total-tpe">
+            Total TPE Required: <span id="totalTPE">0</span>
+        </div>
+    </div>
+
+    <script>
+        const attributes = [
+            'Speed', 'Strength', 'Agility', 'Intelligence',
+            'Tackling', 'Hands', 'Pass Blocking', 'Run Blocking',
+            'Arm', 'Throw Accuracy', 'Kick Power', 'Kick Accuracy'
+        ];
+
+        // Populate attributes grid
+        const grid = document.getElementById('attributesGrid');
+        attributes.forEach(attr => {
+            const div = document.createElement('div');
+            div.className = 'attribute-row';
+            div.innerHTML = `
+                <span class="attribute-name">${attr}</span>
+                <input type="number" min="35" max="99" value="35" class="attribute-input" data-attribute="${attr}">
+                <span class="tpe-cost">0</span>
+            `;
+            grid.appendChild(div);
+        });
+
+        // TPE calculation function
+        function calculateTPE(currentValue) {
+            let tpe = 0;
+            for (let i = 35; i < currentValue; i++) {
+                if (i < 50) tpe += 1;
+                else if (i < 60) tpe += 2;
+                else if (i < 70) tpe += 3;
+                else if (i < 80) tpe += 4;
+                else if (i < 85) tpe += 5;
+                else if (i < 90) tpe += 12;
+                else if (i < 95) tpe += 18;
+                else tpe += 24;
+            }
+            return tpe;
+        }
+
+        // Update TPE totals
+        function updateTotals() {
+            let total = 0;
+            document.querySelectorAll('.attribute-input').forEach(input => {
+                const value = parseInt(input.value);
+                const tpeCost = calculateTPE(value);
+                input.parentElement.querySelector('.tpe-cost').textContent = tpeCost;
+                total += tpeCost;
+            });
+            document.getElementById('totalTPE').textContent = total;
+        }
+
+        // Event listeners
+        document.querySelectorAll('.attribute-input').forEach(input => {
+            input.addEventListener('input', () => {
+                let value = parseInt(input.value);
+                if (value < 35) input.value = 35;
+                if (value > 99) input.value = 99;
+                updateTotals();
+            });
+        });
+
+        // Initial calculation
+        updateTotals();
+    </script>
+</body>
+</html>
