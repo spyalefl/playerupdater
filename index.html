@@ -51,6 +51,14 @@
             padding: 5px;
             border: 1px solid #ddd;
             border-radius: 4px;
+            -moz-appearance: textfield; /* Firefox */
+        }
+
+        /* Remove arrows in Chrome/Safari */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
 
         .tpe-cost {
@@ -144,14 +152,8 @@
         function updateTotals() {
             let total = 0;
             document.querySelectorAll('.attribute-input').forEach(input => {
-                let value = parseInt(input.value);
-                
-                // Handle invalid/empty inputs
-                if (isNaN(value)) value = 35;
-                
-                // Clamp values between 35-99 for calculation
+                let value = parseInt(input.value) || 35;
                 value = Math.min(Math.max(value, 35), 99);
-                
                 const tpeCost = calculateTPE(value);
                 input.parentElement.querySelector('.tpe-cost').textContent = tpeCost;
                 total += tpeCost;
@@ -161,20 +163,26 @@
 
         // Event listeners
         document.querySelectorAll('.attribute-input').forEach(input => {
-            // Allow free-form typing
-            input.addEventListener('input', updateTotals);
-            
-            // Validate and clamp values when focus is lost
-            input.addEventListener('blur', () => {
-                let value = parseInt(input.value);
-                
-                if (isNaN(value)) {
-                    input.value = 35;
-                } else {
-                    input.value = Math.min(Math.max(value, 35), 99);
-                }
+            // Allow free-form typing with validation
+            input.addEventListener('input', function(e) {
+                // Temporarily remove min/max while typing
+                this.removeAttribute('min');
+                this.removeAttribute('max');
                 updateTotals();
             });
+
+            // Final validation when done editing
+            input.addEventListener('blur', function(e) {
+                let value = parseInt(this.value) || 35;
+                value = Math.min(Math.max(value, 35), 99);
+                this.value = value;
+                this.setAttribute('min', 35);
+                this.setAttribute('max', 99);
+                updateTotals();
+            });
+
+            // Handle arrow clicks
+            input.addEventListener('change', updateTotals);
         });
 
         // Initial calculation
