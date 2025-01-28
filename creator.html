@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EFL Player Creator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .back-button {
+            display: block;
+            width: 120px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #3498db;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #2980b9;
+        }
+
+        .player-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .info-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        input, select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        /* Keep all previous attribute-related styles */
+        .attribute-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .attribute-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .attribute-name {
+            flex: 1;
+            font-weight: bold;
+        }
+
+        input[type="number"] {
+            width: 70px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            -moz-appearance: textfield;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .tpe-cost {
+            width: 60px;
+            text-align: right;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .total-tpe {
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .valid-tpe {
+            background-color: #e8f5e9;
+            color: #27ae60;
+        }
+
+        .invalid-tpe {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        #bbcode-output {
+            white-space: pre-wrap;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-button">← Back to Hub</a>
+        <h1>EFL Player Creator</h1>
+
+        <div class="player-info">
+            <div class="info-group">
+                <label>First Name:</label>
+                <input type="text" id="firstName" required>
+            </div>
+            <div class="info-group">
+                <label>Last Name:</label>
+                <input type="text" id="lastName" required>
+            </div>
+            <div class="info-group">
+                <label>Height (in):</label>
+                <input type="number" id="height" min="50" max="90" required>
+            </div>
+            <div class="info-group">
+                <label>Weight (lbs):</label>
+                <input type="number" id="weight" min="150" max="350" required>
+            </div>
+            <div class="info-group">
+                <label>Jersey Number:</label>
+                <input type="number" id="jersey" min="0" max="99" required>
+            </div>
+            <div class="info-group">
+                <label>Discord Username:</label>
+                <input type="text" id="discord" required>
+            </div>
+            <div class="info-group">
+                <label>Position:</label>
+                <select id="position" required>
+                    <option value="">Select Position</option>
+                    <option>QB</option>
+                    <option>RB</option>
+                    <option>FB</option>
+                    <option>WR</option>
+                    <option>TE</option>
+                    <option>LB</option>
+                    <option>CB</option>
+                    <option>FS</option>
+                    <option>SS</option>
+                    <option>K/P</option>
+                </select>
+            </div>
+            <div class="info-group">
+                <label>Archetype:</label>
+                <select id="archetype" required disabled>
+                    <option value="">Select Position First</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="attribute-grid" id="attributesGrid"></div>
+
+        <div id="totalTPE" class="total-tpe valid-tpe">Total TPE Used: 0/400</div>
+
+        <button id="createButton" disabled style="width: 100%; padding: 15px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            Create Player (400 TPE Required)
+        </button>
+
+        <div class="modal" id="outputModal">
+            <div class="modal-content">
+                <h2>BBCode Output</h2>
+                <div id="bbcode-output"></div>
+                <button onclick="document.getElementById('outputModal').style.display = 'none'" 
+                        style="margin-top: 15px; padding: 10px 20px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Archetype data
+        const archetypes = {
+            'QB': ['Pocket Passer', 'Gunslinger', 'Dual-Threat'],
+            'RB': ['One-Cut', 'Workhorse', 'Scat Back'],
+            'FB': ['Runner', 'Blocker', 'HBack'],
+            'WR': ['Deep Threat', 'Posession', 'Redzone'],
+            'TE': ['Vertical Threat', 'Possession', 'Blocking'],
+            'LB': ['Balanced', 'Coverage', 'Pass Rusher'],
+            'CB': ['Man Cover', 'Zone Cover', 'Run Support'],
+            'FS': ['Man Cover', 'Zone Cover', 'Run Support'],
+            'SS': ['Man Cover', 'Zone Cover', 'Run Support'],
+            'K/P': ['Power', 'Accurate']
+        };
+
+        // Attribute caps
+        const archetypeCaps = {
+            // QB
+            'Pocket Passer': { AGI: 60, SPD: 60, ARM: 90 },
+            'Gunslinger': { AGI: 80, SPD: 80, INT: 90, ACC: 90 },
+            'Dual-Threat': { INT: 80, SPD: 90, ACC: 90 },
+            // RB
+            'One-Cut': { STR: 60, INT: 80, AGI: 90 },
+            // ... Add all other archetype caps here
+        };
+
+        const attributes = [
+            'Speed', 'Strength', 'Agility', 'Intelligence',
+            'Tackling', 'Hands', 'Pass Blocking', 'Run Blocking',
+            'Arm', 'Throw Accuracy', 'Kick Power', 'Kick Accuracy'
+        ];
+
+        // Initialize attribute grid
+        const grid = document.getElementById('attributesGrid');
+        attributes.forEach(attr => {
+            const div = document.createElement('div');
+            div.className = 'attribute-row';
+            div.innerHTML = `
+                <span class="attribute-name">${attr}</span>
+                <input type="number" min="35" max="99" value="35" class="attribute-input" data-attribute="${attr}">
+                <span class="tpe-cost">0</span>
+            `;
+            grid.appendChild(div);
+        });
+
+        // Position change handler
+        document.getElementById('position').addEventListener('change', function() {
+            const archetypeSelect = document.getElementById('archetype');
+            archetypeSelect.innerHTML = '<option value="">Select Archetype</option>';
+            
+            if (this.value) {
+                archetypes[this.value].forEach(type => {
+                    const option = document.createElement('option');
+                    option.value = type;
+                    option.textContent = type;
+                    archetypeSelect.appendChild(option);
+                });
+                archetypeSelect.disabled = false;
+            } else {
+                archetypeSelect.disabled = true;
+            }
+        });
+
+        // TPE calculation
+        function calculateTPE(currentValue) {
+            let tpe = 0;
+            for (let i = 35; i < currentValue; i++) {
+                if (i < 50) tpe += 1;
+                else if (i < 60) tpe += 2;
+                else if (i < 70) tpe += 3;
+                else if (i < 80) tpe += 4;
+                else if (i < 85) tpe += 5;
+                else if (i < 90) tpe += 12;
+                else if (i < 95) tpe += 18;
+                else tpe += 24;
+            }
+            return tpe;
+        }
+
+        // Update totals and validation
+        function updateTotals() {
+            let total = 0;
+            document.querySelectorAll('.attribute-input').forEach(input => {
+                let value = parseInt(input.value) || 35;
+                value = Math.min(Math.max(value, 35), 99);
+                const tpeCost = calculateTPE(value);
+                input.parentElement.querySelector('.tpe-cost').textContent = tpeCost;
+                total += tpeCost;
+            });
+
+            const tpeDisplay = document.getElementById('totalTPE');
+            tpeDisplay.textContent = `Total TPE Used: ${total}/400`;
+            tpeDisplay.className = `total-tpe ${total > 400 ? 'invalid-tpe' : 'valid-tpe'}`;
+
+            // Enable/disable create button
+            const allFilled = [...document.querySelectorAll('input, select')].every(el => el.checkValidity());
+            document.getElementById('createButton').disabled = total > 400 || !allFilled;
+        }
+
+        // Event listeners
+        document.querySelectorAll('.attribute-input').forEach(input => {
+            input.addEventListener('input', function(e) {
+                this.removeAttribute('min');
+                this.removeAttribute('max');
+                updateTotals();
+            });
+
+            input.addEventListener('blur', function(e) {
+                let value = parseInt(this.value) || 35;
+                value = Math.min(Math.max(value, 35), 99);
+                this.value = value;
+                this.setAttribute('min', 35);
+                this.setAttribute('max', 99);
+                updateTotals();
+            });
+        });
+
+        document.getElementById('createButton').addEventListener('click', function() {
+            const playerData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                height: document.getElementById('height').value,
+                weight: document.getElementById('weight').value,
+                jersey: document.getElementById('jersey').value,
+                discord: document.getElementById('discord').value,
+                position: document.getElementById('position').value,
+                archetype: document.getElementById('archetype').value,
+                attributes: {}
+            };
+
+            document.querySelectorAll('.attribute-input').forEach(input => {
+                playerData.attributes[input.dataset.attribute] = input.value;
+            });
+
+            // Generate BBCode
+            const bbcode = `[b]Player Information[/b]
+[b]Name:[/b] ${playerData.firstName} ${playerData.lastName}
+[b]Position:[/b] ${playerData.position}
+[b]Archetype:[/b] ${playerData.archetype}
+[b]Height:[/b] ${playerData.height}"
+[b]Weight:[/b] ${playerData.weight} lbs
+[b]Jersey Number:[/b] #${playerData.jersey}
+[b]Discord:[/b] ${playerData.discord}
+
+[b]Attributes:[/b]
+${Object.entries(playerData.attributes).map(([attr, value]) => `${attr}: ${value}`).join('\n')}`;
+
+            document.getElementById('bbcode-output').textContent = bbcode;
+            document.getElementById('outputModal').style.display = 'block';
+        });
+
+        // Initial setup
+        document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', updateTotals));
+        updateTotals();
+    </script>
+</body>
+</html>
