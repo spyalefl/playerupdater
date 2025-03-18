@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Player TPE Scraper</title>
+    <script>
+        async function scrapeTPE() {
+            const url = 'https://example.com/team-roster'; // Replace with the actual URL
+            
+            try {
+                let response = await fetch(url);
+                let text = await response.text();
+                let parser = new DOMParser();
+                let doc = parser.parseFromString(text, 'text/html');
+                
+                let players = [];
+                let totalTPE = 0;
+                let offensiveTPE = 0, defensiveTPE = 0;
+                let offensiveCount = 0, defensiveCount = 0;
+                
+                // Adjust selectors based on actual webpage structure
+                let playerElements = doc.querySelectorAll('.player-row');
+                
+                playerElements.forEach(player => {
+                    let name = player.querySelector('.player-name')?.innerText.trim();
+                    let tpe = parseInt(player.querySelector('.player-tpe')?.innerText.trim()) || 0;
+                    let position = player.querySelector('.player-position')?.innerText.trim();
+                    
+                    if (name && !isNaN(tpe)) {
+                        players.push({ name, tpe, position });
+                        totalTPE += tpe;
+                        
+                        if (['QB', 'RB', 'WR', 'TE', 'OL'].includes(position)) {
+                            offensiveTPE += tpe;
+                            offensiveCount++;
+                        } else if (['DL', 'LB', 'CB', 'S'].includes(position)) {
+                            defensiveTPE += tpe;
+                            defensiveCount++;
+                        }
+                    }
+                });
+                
+                let avgTPE = totalTPE / players.length;
+                let avgOffensiveTPE = offensiveCount ? offensiveTPE / offensiveCount : 0;
+                let avgDefensiveTPE = defensiveCount ? defensiveTPE / defensiveCount : 0;
+                
+                document.getElementById('output').innerHTML = `
+                    <p>Total Players: ${players.length}</p>
+                    <p>Average Team TPE: ${avgTPE.toFixed(2)}</p>
+                    <p>Average Offensive TPE: ${avgOffensiveTPE.toFixed(2)}</p>
+                    <p>Average Defensive TPE: ${avgDefensiveTPE.toFixed(2)}</p>
+                `;
+            } catch (error) {
+                console.error('Error scraping data:', error);
+                document.getElementById('output').innerText = 'Failed to retrieve player data.';
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Team Player TPE Scraper</h1>
+    <button onclick="scrapeTPE()">Scrape TPE Data</button>
+    <div id="output"></div>
+</body>
+</html>
