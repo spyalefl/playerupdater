@@ -1,64 +1,79 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Player TPE Scraper</title>
-    <script>
-        async function scrapeTPE() {
-            const url = 'https://eflnow.jcink.net/index.php?showforum=30'
-            
-            try {
-                let response = await fetch(url);
-                let text = await response.text();
-                let parser = new DOMParser();
-                let doc = parser.parseFromString(text, 'text/html');
-                
-                let players = [];
-                let totalTPE = 0;
-                let offensiveTPE = 0, defensiveTPE = 0;
-                let offensiveCount = 0, defensiveCount = 0;
-                
-                // Adjust selectors based on actual webpage structure
-                let playerElements = doc.querySelectorAll('.player-row');
-                
-                playerElements.forEach(player => {
-                    let name = player.querySelector('.player-name')?.innerText.trim();
-                    let tpe = parseInt(player.querySelector('.player-tpe')?.innerText.trim()) || 0;
-                    let position = player.querySelector('.player-position')?.innerText.trim();
-                    
-                    if (name && !isNaN(tpe)) {
-                        players.push({ name, tpe, position });
-                        totalTPE += tpe;
-                        
-                        if (['QB', 'RB', 'WR', 'TE', 'OL'].includes(position)) {
-                            offensiveTPE += tpe;
-                            offensiveCount++;
-                        } else if (['DL', 'LB', 'CB', 'S'].includes(position)) {
-                            defensiveTPE += tpe;
-                            defensiveCount++;
-                        }
-                    }
-                });
-                
-                let avgTPE = totalTPE / players.length;
-                let avgOffensiveTPE = offensiveCount ? offensiveTPE / offensiveCount : 0;
-                let avgDefensiveTPE = defensiveCount ? defensiveTPE / defensiveCount : 0;
-                
-                document.getElementById('output').innerHTML = `
-                    <p>Total Players: ${players.length}</p>
-                    <p>Average Team TPE: ${avgTPE.toFixed(2)}</p>
-                    <p>Average Offensive TPE: ${avgOffensiveTPE.toFixed(2)}</p>
-                    <p>Average Defensive TPE: ${avgDefensiveTPE.toFixed(2)}</p>
-                `;
-            } catch (error) {
-                console.error('Error scraping data:', error);
-                document.getElementById('output').innerText = 'Failed to retrieve player data.';
-            }
-        }
-    </script>
+    <title>TPE Scraper</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .results { margin-top: 20px; padding: 15px; border: 1px solid #ddd; }
+        .position-group { margin-bottom: 20px; }
+    </style>
 </head>
 <body>
-    <h1>Team Player TPE Scraper</h1>
-    <button onclick="scrapeTPE()">Scrape TPE Data</button>
-    <div id="output"></div>
+    <h1>EFL Team Scraper</h1>
+    <input type="text" id="urlInput" placeholder="Enter team page URL" style="width: 300px;">
+    <button onclick="scrapeData()">Analyze Team</button>
+    
+    <div class="results" id="results"></div>
+
+    <script>
+        // Position classification
+        const offensivePositions = ['QB', 'RB', 'WR', 'TE', 'OL', 'K'];
+        const defensivePositions = ['DL', 'LB', 'CB', 'S', 'P'];
+
+        async function scrapeData() {
+            const url = document.getElementById('urlInput').value;
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = 'Loading...';
+
+            try {
+                const response = await fetch(url);
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                // This selector needs to be customized for the specific website structure
+                const players = Array.from(doc.querySelectorAll('.player-row')).map(player => {
+                    return {
+                        name: player.querySelector('.name').innerText,
+                        position: player.querySelector('.position').innerText,
+                        tpe: parseInt(player.querySelector('.tpe').innerText)
+                    };
+                });
+
+                analyzePlayers(players);
+            } catch (error) {
+                resultsDiv.innerHTML = `Error: ${error.message}`;
+            }
+        }
+
+        function analyzePlayers(players) {
+            const offense = players.filter(p => offensivePositions.includes(p.position));
+            const defense = players.filter(p => defensivePositions.includes(p.position));
+            const other = players.filter(p => 
+                ![...offensivePositions, ...defensivePositions].includes(p.position)
+            );
+
+            const avgOffense = offense.reduce((sum, p) => sum + p.tpe, 0) / offense.length || 0;
+            const avgDefense = defense.reduce((sum, p) => sum + p.tpe, 0) / defense.length || 0;
+
+            const results = `
+                <h3>Results:</h3>
+                <div class="position-group">
+                    <h4>Offensive Players (${offense.length})</h4>
+                    <p>Average TPE: ${avgOffense.toFixed(1)}</p>
+                </div>
+                <div class="position-group">
+                    <h4>Defensive Players (${defense.length})</h4>
+                    <p>Average TPE: ${avgDefense.toFixed(1)}</p>
+                </div>
+                <div class="position-group">
+                    <h4>Other Players (${other.length})</h4>
+                    <p>Positions: ${[...new Set(other.map(p => p.position))].join(', ')}</p>
+                </div>
+            `;
+
+            document.getElementById('results').innerHTML = results;
+        }
+    </script>
 </body>
 </html>
