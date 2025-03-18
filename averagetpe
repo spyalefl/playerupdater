@@ -4,7 +4,7 @@
     <title>Player TPE Scraper</title>
     <script>
         async function scrapeTPE() {
-            const url = 'https://example.com/team-roster'; // Replace with the actual URL
+            const url = 'https://eflnow.jcink.net/index.php?showforum=30'
             
             try {
                 let response = await fetch(url);
