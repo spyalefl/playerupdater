@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EFL Awards History</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .award-category {
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .award-header {
+            padding: 12px 15px;
+            background-color: #2c3e50;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .award-header:hover {
+            background-color: #34495e;
+        }
+        .award-content {
+            padding: 0 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background-color: #f9f9f9;
+        }
+        .award-winner {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        .award-winner:last-child {
+            border-bottom: none;
+        }
+        .season {
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        .category-name {
+            font-weight: bold;
+        }
+        .toggle-icon::after {
+            content: "+";
+            font-weight: bold;
+        }
+        .active .toggle-icon::after {
+            content: "-";
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>EFL Awards History</h1>
+        
+        <div class="award-category">
+            <div class="award-header" onclick="toggleCategory(this)">
+                <span class="category-name">Quarterback of the Year (QBoty)</span>
+                <span class="toggle-icon"></span>
+            </div>
+            <div class="award-content">
+                <div class="award-winner">
+                    <span>Skyler Murray</span>
+                    <span class="season">S1</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="award-category">
+            <div class="award-header" onclick="toggleCategory(this)">
+                <span class="category-name">Running Back of the Year (RBoty)</span>
+                <span class="toggle-icon"></span>
+            </div>
+            <div class="award-content">
+                <div class="award-winner">
+                    <span>Brian Gould</span>
+                    <span class="season">S1</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="award-category">
+            <div class="award-header" onclick="toggleCategory(this)">
+                <span class="category-name">Wide Receiver of the Year (WRoty)</span>
+                <span class="toggle-icon"></span>
+            </div>
+            <div class="award-content">
+                <div class="award-winner">
+                    <span>Jace Steele</span>
+                    <span class="season">S1</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="award-category">
+            <div class="award-header" onclick="toggleCategory(this)">
+                <span class="category-name">Tight End of the Year (TEoty)</span>
+                <span class="toggle-icon"></span>
+            </div>
+            <div class="award-content">
+                <div class="award-winner">
+                    <span>Deci Dueye</span>
+                    <span class="season">S1</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="award-category">
+            <div class="award-header" onclick="toggleCategory(this)">
+                <span class="category-name">Kicker/Punter of the Year (KPoty)</span>
+                <span class="toggle-icon"></span>
+            </div>
+            <div class="award-content">
+                <div class="award-winner">
+                    <span>Mo Watanabe</span>
+                    <span class="season">S1</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="award-category">
+            <div class="award-header" onclick="toggleCategory(this)">
+                <span class="category-name">Kick Returner of the Year (KRoty)</span>
+                <span class="toggle-icon"></span>
+            </div>
+            <div class="award-content">
+                <div class="award-winner">
+                    <span>Kim Dahyun</span>
+                    <span class="season">S1</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="award-category">
+            <div class="award-header" onclick="toggleCategory(this)">
+                <span class="category-name">Linebacker of the Year (LBoty)</span>
+                <span class="toggle-icon"></span>
+            </div>
+            <div class="award-content">
+                <div class="award-winner">
+                    <span>Dyrus Stone II</span>
+                    <span class="season">S1</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="award-category">
+            <div class="award-header" onclick="toggleCategory(this)">
+                <span class="category-name">Safety of the Year (Soty)</span>
+                <span class="toggle-icon"></span>
+            </div>
+            <div class="award-content">
+                <div class="award-winner">
+                    <span>Ritarine Balter</span>
+                    <span class="season">S1</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="award-category">
+            <div class="award-header" onclick="toggleCategory(this)">
+                <span class="category-name">Cornerback of the Year (CBoty)</span>
+                <span class="toggle-icon"></span>
+            </div>
+            <div class="award-content">
+                <div class="award-winner">
+                    <span>Prince Gloucestershire</span>
+                    <span class="season">S1</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="award-category">
+            <div class="award-header" onclick="toggleCategory(this)">
+                <span class="category-name">Offensive Player of the Year (OPoty)</span>
+                <span class="toggle-icon"></span>
+            </div>
+            <div class="award-content">
+                <div class="award-winner">
+                    <span>Skyler Murray</span>
+                    <span class="season">S1</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="award-category">
+            <div class="award-header" onclick="toggleCategory(this)">
+                <span class="category-name">Defensive Player of the Year (DPoty)</span>
+                <span class="toggle-icon"></span>
+            </div>
+            <div class="award-content">
+                <div class="award-winner">
+                    <span>Dyrus Stone II</span>
+                    <span class="season">S1</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="award-category">
+            <div class="award-header" onclick="toggleCategory(this)">
+                <span class="category-name">Most Valuable Player (MVP)</span>
+                <span class="toggle-icon"></span>
+            </div>
+            <div class="award-content">
+                <div class="award-winner">
+                    <span>Skyler Murray</span>
+                    <span class="season">S1</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="award-category">
+            <div class="award-header" onclick="toggleCategory(this)">
+                <span class="category-name">General Manager of the Year (GMoty)</span>
+                <span class="toggle-icon"></span>
+            </div>
+            <div class="award-content">
+                <div class="award-winner">
+                    <span>Vorkosh</span>
+                    <span class="season">S1</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="award-category">
+            <div class="award-header" onclick="toggleCategory(this)">
+                <span class="category-name">Media Director of the Year (MDM)</span>
+                <span class="toggle-icon"></span>
+            </div>
+            <div class="award-content">
+                <div class="award-winner">
+                    <span>Jetsqb101</span>
+                    <span class="season">S1</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleCategory(header) {
+            header.classList.toggle("active");
+            const content = header.nextElementSibling;
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+            }
+        }
+    </script>
+</body>
+</html>
