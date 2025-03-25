@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EFL Cap Finder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .player-form {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        .position-select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        input[type="number"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .totals {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f5e9;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .error {
+            color: #c62828;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>EFL Cap Finder</h1>
+        
+        <div class="player-form">
+            <input type="text" id="playerName" placeholder="Player Name">
+            <select id="playerPosition" class="position-select">
+                <option value="QB">QB</option>
+                <option value="RB">RB</option>
+                <option value="WR">WR</option>
+                <option value="TE">TE</option>
+                <option value="FB">FB</option>
+                <option value="K/P">K/P</option>
+                <option value="DL">DL</option>
+                <option value="LB">LB</option>
+                <option value="CB">CB</option>
+                <option value="FS">FS</option>
+                <option value="SS">SS</option>
+            </select>
+            <input type="number" id="playerAPE" placeholder="APE" min="0">
+            <button onclick="addPlayer()">Add Player</button>
+        </div>
+        <div id="error" class="error"></div>
+
+        <table id="rosterTable">
+            <thead>
+                <tr>
+                    <th>Player</th>
+                    <th>Position</th>
+                    <th>APE</th>
+                    <th>Base Salary</th>
+                    <th>Adj. Salary</th>
+                </tr>
+            </thead>
+            <tbody id="rosterBody"></tbody>
+        </table>
+
+        <div class="totals">
+            <p>Total Roster Cost: $<span id="totalCost">0</span>M</p>
+            <p>Total Players: <span id="playerCount">0</span></p>
+        </div>
+    </div>
+
+    <script>
+        const roster = [];
+        const positionAdjustments = {
+            'TE': -0.5, 'FB': -0.5, 'K/P': -0.5,  // Discount positions
+            'QB': 0.5, 'RB': 0.5, 'WR': 0.5,      // Premium positions
+            // Defense gets no adjustment
+            'DL': 0, 'LB': 0, 'CB': 0, 'FS': 0, 'SS': 0
+        };
+
+        function calculateBaseSalary(ape) {
+            if (ape <= 350) return 1;
+            if (ape <= 500) return 1.5;
+            if (ape <= 600) return 2;
+            if (ape <= 700) return 2.5;
+            if (ape <= 800) return 3;
+            if (ape <= 900) return 3.5;
+            if (ape <= 1000) return 4;
+            if (ape <= 1100) return 4.5;
+            if (ape <= 1200) return 5;
+            if (ape <= 1300) return 5.5;
+            if (ape <= 1400) return 6;
+            if (ape <= 1500) return 6.5;
+            return 7; // 1501+
+        }
+
+        function addPlayer() {
+            const name = document.getElementById('playerName').value;
+            const position = document.getElementById('playerPosition').value;
+            const ape = parseInt(document.getElementById('playerAPE').value);
+
+            if (!name || isNaN(ape)) {
+                document.getElementById('error').textContent = "Please enter both name and valid APE";
+                return;
+            }
+
+            const baseSalary = calculateBaseSalary(ape);
+            const adjustment = positionAdjustments[position] || 0;
+            const adjustedSalary = baseSalary + adjustment;
+
+            roster.push({
+                name,
+                position,
+                ape,
+                baseSalary,
+                adjustedSalary
+            });
+
+            updateRosterDisplay();
+            document.getElementById('playerName').value = '';
+            document.getElementById('playerAPE').value = '';
+            document.getElementById('error').textContent = '';
+        }
+
+        function updateRosterDisplay() {
+            const tbody = document.getElementById('rosterBody');
+            tbody.innerHTML = '';
+
+            let totalCost = 0;
+            roster.forEach(player => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${player.name}</td>
+                    <td>${player.position}</td>
+                    <td>${player.ape}</td>
+                    <td>$${player.baseSalary.toFixed(1)}M</td>
+                    <td>$${player.adjustedSalary.toFixed(1)}M</td>
+                `;
+                tbody.appendChild(row);
+                totalCost += player.adjustedSalary;
+            });
+
+            document.getElementById('totalCost').textContent = totalCost.toFixed(1);
+            document.getElementById('playerCount').textContent = roster.length;
+        }
+    </script>
+</body>
+</html>
