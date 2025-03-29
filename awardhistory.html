@@ -990,6 +990,291 @@
                         </div>
                     </div>
                 </div>
+                       <!-- Champions Section -->
+        <div id="championsSection" style="display:none">
+            <div class="view-selector">
+                <div class="view-option active" onclick="switchChampionsView('seasons')">By Season</div>
+                <div class="view-option" onclick="switchChampionsView('users')">By User</div>
+            </div>
+
+            <!-- Champions by Season View -->
+            <div id="championsSeasonsView" class="champions-view view-active">
+                <div class="champions-category">
+                    <div class="champions-header" onclick="toggleCategory(this)">
+                        <span class="champions-team-name">S1: San Antonio Wolfpack (28-10)</span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="champions-content">
+                        <div class="champions-player">
+                            <span>Tom Gravy (QB)</span>
+                            <span class="team-name">@Zing</span>
+                        </div>
+                        <div class="champions-player">
+                            <span>Killian Rose Jr. (RB)</span>
+                            <span class="team-name">@Gage2</span>
+                        </div>
+                        <div class="champions-player">
+                            <span>Da Bus (RB)</span>
+                            <span class="team-name">@Sixersfan</span>
+                        </div>
+                        <div class="champions-player">
+                            <span>Conrad McCarthy (TE)</span>
+                            <span class="team-name">@Crash_conrad</span>
+                        </div>
+                        <div class="champions-player">
+                            <span>Samie Parker (WR)</span>
+                            <span class="team-name">@Dame</span>
+                        </div>
+                        <div class="champions-player">
+                            <span>Duke Meadows (WR)</span>
+                            <span class="team-name">@McWolf</span>
+                        </div>
+                        <div class="champions-player">
+                            <span>Will Love (WR)</span>
+                            <span class="team-name">@Lowkey</span>
+                        </div>
+                        <div class="champions-player">
+                            <span>HeHateMe KicksThree (K/P)</span>
+                            <span class="team-name">@Vorkosh</span>
+                        </div>
+                        <div class="champions-player">
+                            <span>Sa'Vion Smith (CB)</span>
+                            <span class="team-name">@Crash_conrad</span>
+                        </div>
+                        <div class="champions-player">
+                            <span>Trayvon Kennedy (LB)</span>
+                            <span class="team-name">@Spyal</span>
+                        </div>
+                        <div class="champions-player">
+                            <span>Max Bounty (CB)</span>
+                            <span class="team-name">@FFPPirate</span>
+                        </div>
+                        <div class="champions-player">
+                            <span>Chris Summer (LB)</span>
+                            <span class="team-name">@Dire12</span>
+                        </div>
+                        <div class="champions-player">
+                            <span>Emmanuel Jacobs (SS)</span>
+                            <span class="team-name">@Dame</span>
+                        </div>
+                        <div class="champions-player">
+                            <span>HeHateMe PickSix (CB)</span>
+                            <span class="team-name">@Vorkosh</span>
+                        </div>
+                        <div class="champions-player">
+                            <span>Dyrus Stone II (LB)</span>
+                            <span class="team-name">@OMW</span>
+                        </div>
+                        <div class="champions-player">
+                            <span>Moh Bility (SS)</span>
+                            <span class="team-name">@Baako</span>
+                        </div>
+                        <div class="champions-player">
+                            <span>Mister Sir (LB)</span>
+                            <span class="team-name">@Spartan</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Champions by User View -->
+            <div id="championsUsersView" class="champions-users-view">
+                <div class="champions-user-category">
+                    <div class="champions-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Vorkosh <span class="champions-count">🏆🏆</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="champions-user-content">
+                        <div class="champions-user-player">
+                            <span>HeHateMe KicksThree (K/P)</span>
+                            <span class="award-name">S1 Champion</span>
+                        </div>
+                        <div class="champions-user-player">
+                            <span>HeHateMe PickSix (CB)</span>
+                            <span class="award-name">S1 Champion</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="champions-user-category">
+                    <div class="champions-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Crash_conrad <span class="champions-count">🏆🏆</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="champions-user-content">
+                        <div class="champions-user-player">
+                            <span>Conrad McCarthy (TE)</span>
+                            <span class="award-name">S1 Champion</span>
+                        </div>
+                        <div class="champions-user-player">
+                            <span>Sa'Vion Smith (CB)</span>
+                            <span class="award-name">S1 Champion</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="champions-user-category">
+                    <div class="champions-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Dame <span class="champions-count">🏆🏆</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="champions-user-content">
+                        <div class="champions-user-player">
+                            <span>Samie Parker (WR)</span>
+                            <span class="award-name">S1 Champion</span>
+                        </div>
+                        <div class="champions-user-player">
+                            <span>Emmanuel Jacobs (SS)</span>
+                            <span class="award-name">S1 Champion</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="champions-user-category">
+                    <div class="champions-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Zing <span class="champions-count">🏆</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="champions-user-content">
+                        <div class="champions-user-player">
+                            <span>Tom Gravy (QB)</span>
+                            <span class="award-name">S1 Champion</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="champions-user-category">
+                    <div class="champions-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Gage2 <span class="champions-count">🏆</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="champions-user-content">
+                        <div class="champions-user-player">
+                            <span>Killian Rose Jr. (RB)</span>
+                            <span class="award-name">S1 Champion</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="champions-user-category">
+                    <div class="champions-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Sixersfan <span class="champions-count">🏆</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="champions-user-content">
+                        <div class="champions-user-player">
+                            <span>Da Bus (RB)</span>
+                            <span class="award-name">S1 Champion</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="champions-user-category">
+                    <div class="champions-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">McWolf <span class="champions-count">🏆</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="champions-user-content">
+                        <div class="champions-user-player">
+                            <span>Duke Meadows (WR)</span>
+                            <span class="award-name">S1 Champion</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="champions-user-category">
+                    <div class="champions-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Lowkey <span class="champions-count">🏆</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="champions-user-content">
+                        <div class="champions-user-player">
+                            <span>Will Love (WR)</span>
+                            <span class="award-name">S1 Champion</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="champions-user-category">
+                    <div class="champions-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Spyal <span class="champions-count">🏆</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="champions-user-content">
+                        <div class="champions-user-player">
+                            <span>Trayvon Kennedy (LB)</span>
+                            <span class="award-name">S1 Champion</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="champions-user-category">
+                    <div class="champions-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">FFPPirate <span class="champions-count">🏆</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="champions-user-content">
+                        <div class="champions-user-player">
+                            <span>Max Bounty (CB)</span>
+                            <span class="award-name">S1 Champion</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="champions-user-category">
+                    <div class="champions-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Dire12 <span class="champions-count">🏆</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="champions-user-content">
+                        <div class="champions-user-player">
+                            <span>Chris Summer (LB)</span>
+                            <span class="award-name">S1 Champion</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="champions-user-category">
+                    <div class="champions-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">OMW <span class="champions-count">🏆</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="champions-user-content">
+                        <div class="champions-user-player">
+                            <span>Dyrus Stone II (LB)</span>
+                            <span class="award-name">S1 Champion</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="champions-user-category">
+                    <div class="champions-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Baako <span class="champions-count">🏆</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="champions-user-content">
+                        <div class="champions-user-player">
+                            <span>Moh Bility (SS)</span>
+                            <span class="award-name">S1 Champion</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="champions-user-category">
+                    <div class="champions-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Spartan <span class="champions-count">🏆</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="champions-user-content">
+                        <div class="champions-user-player">
+                            <span>Mister Sir (LB)</span>
+                            <span class="award-name">S1 Champion</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
             </div>
         </div>
     </div>
@@ -1045,6 +1330,20 @@
         document.getElementById('allpro' + (view === 'teams' ? 'Teams' : 'Users') + 'View').classList.add('view-active');
     }
 }
+          function switchChampionsView(view) {
+            // For champions section
+            if (document.getElementById('championsSection').style.display !== 'none') {
+                document.querySelectorAll('#championsSection .view-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                event.target.classList.add('active');
+
+                document.getElementById('championsSeasonsView').classList.remove('view-active');
+                document.getElementById('championsUsersView').classList.remove('view-active');
+                document.getElementById('champions' + (view === 'seasons' ? 'Seasons' : 'Users') + 'View').classList.add('view-active');
+            }
+        }
+    </script>
     </script>
 </body>
 </html>
