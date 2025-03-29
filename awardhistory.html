@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EFL Awards History</title>
+    <title>EFL Honors History</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -17,6 +17,23 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .main-selector {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+        .main-option {
+            padding: 8px 20px;
+            margin-right: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .main-option.active {
+            background-color: #3498db;
+            color: white;
+            border-radius: 4px 4px 0 0;
         }
         .view-selector {
             display: flex;
@@ -34,19 +51,19 @@
             background-color: #3498db;
             color: white;
         }
-        .awards-view, .users-view {
+        .awards-view, .users-view, .allpro-view, .allpro-users-view {
             display: none;
         }
         .view-active {
             display: block;
         }
-        .award-category, .user-category {
+        .award-category, .user-category, .allpro-category, .allpro-user-category {
             margin-bottom: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
             overflow: hidden;
         }
-        .award-header, .user-header {
+        .award-header, .user-header, .allpro-header, .allpro-user-header {
             padding: 12px 15px;
             background-color: #2c3e50;
             color: white;
@@ -55,30 +72,30 @@
             justify-content: space-between;
             align-items: center;
         }
-        .award-header:hover, .user-header:hover {
+        .award-header:hover, .user-header:hover, .allpro-header:hover, .allpro-user-header:hover {
             background-color: #34495e;
         }
-        .award-content, .user-content {
+        .award-content, .user-content, .allpro-content, .allpro-user-content {
             padding: 0 15px;
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease-out;
             background-color: #f9f9f9;
         }
-        .award-winner, .user-award {
+        .award-winner, .user-award, .allpro-player, .allpro-user-player {
             padding: 10px 0;
             border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
         }
-        .award-winner:last-child, .user-award:last-child {
+        .award-winner:last-child, .user-award:last-child, .allpro-player:last-child, .allpro-user-player:last-child {
             border-bottom: none;
         }
-        .season, .award-name {
+        .season, .award-name, .team-name {
             color: #7f8c8d;
             font-style: italic;
         }
-        .category-name, .user-name {
+        .category-name, .user-name, .allpro-team-name {
             font-weight: bold;
         }
         .toggle-icon::after {
@@ -88,7 +105,7 @@
         .active .toggle-icon::after {
             content: "-";
         }
-        .user-count {
+        .user-count, .allpro-count {
             background-color: #3498db;
             color: white;
             padding: 2px 8px;
@@ -99,344 +116,878 @@
 </head>
 <body>
     <div class="container">
-        <h1>EFL Awards History</h1>
+        <h1>EFL Honors History</h1>
         
-        <div class="view-selector">
-            <div class="view-option active" onclick="switchView('awards')">By Award Category</div>
-            <div class="view-option" onclick="switchView('users')">By User</div>
+        <div class="main-selector">
+            <div class="main-option active" onclick="switchMainView('awards')">Awards</div>
+            <div class="main-option" onclick="switchMainView('allpro')">All-Pro</div>
         </div>
 
-        <!-- Awards by Category View -->
-        <div id="awardsView" class="awards-view view-active">
-            <!-- Previous award categories content here -->
-            <div class="award-category">
-                <div class="award-header" onclick="toggleCategory(this)">
-                    <span class="category-name">Quarterback of the Year (QBoty)</span>
-                    <span class="toggle-icon"></span>
+        <!-- Awards Section -->
+        <div id="awardsSection">
+            <div class="view-selector">
+                <div class="view-option active" onclick="switchView('awards')">By Award Category</div>
+                <div class="view-option" onclick="switchView('users')">By User</div>
+            </div>
+
+            <!-- Awards by Category View -->
+            <div id="awardsView" class="awards-view view-active">
+                <div class="award-category">
+                    <div class="award-header" onclick="toggleCategory(this)">
+                        <span class="category-name">Quarterback of the Year (QBoty)</span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="award-content">
+                        <div class="award-winner">
+                            <span>Skyler Murray (AW13)</span>
+                            <span class="season">S1</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="award-content">
-                    <div class="award-winner">
-                        <span>Skyler Murray (AW13)</span>
-                        <span class="season">S1</span>
+
+                <div class="award-category">
+                    <div class="award-header" onclick="toggleCategory(this)">
+                        <span class="category-name">Running Back of the Year (RBoty)</span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="award-content">
+                        <div class="award-winner">
+                            <span>Brian Gould (Wheaties)</span>
+                            <span class="season">S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="award-category">
+                    <div class="award-header" onclick="toggleCategory(this)">
+                        <span class="category-name">Wide Receiver of the Year (WRoty)</span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="award-content">
+                        <div class="award-winner">
+                            <span>Jace Steele (Adrest)</span>
+                            <span class="season">S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="award-category">
+                    <div class="award-header" onclick="toggleCategory(this)">
+                        <span class="category-name">Tight End of the Year (TEoty)</span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="award-content">
+                        <div class="award-winner">
+                            <span>Deci Dueye (Omg)</span>
+                            <span class="season">S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="award-category">
+                    <div class="award-header" onclick="toggleCategory(this)">
+                        <span class="category-name">Kicker/Punter of the Year (KPoty)</span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="award-content">
+                        <div class="award-winner">
+                            <span>Mo Watanabe (Spyal)</span>
+                            <span class="season">S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="award-category">
+                    <div class="award-header" onclick="toggleCategory(this)">
+                        <span class="category-name">Kick Returner of the Year (KRoty)</span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="award-content">
+                        <div class="award-winner">
+                            <span>Kim Dahyun (bobbychan)</span>
+                            <span class="season">S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="award-category">
+                    <div class="award-header" onclick="toggleCategory(this)">
+                        <span class="category-name">Linebacker of the Year (LBoty)</span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="award-content">
+                        <div class="award-winner">
+                            <span>Dyrus Stone II (OMW)</span>
+                            <span class="season">S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="award-category">
+                    <div class="award-header" onclick="toggleCategory(this)">
+                        <span class="category-name">Safety of the Year (Soty)</span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="award-content">
+                        <div class="award-winner">
+                            <span>Ritarine Balter (Adrest)</span>
+                            <span class="season">S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="award-category">
+                    <div class="award-header" onclick="toggleCategory(this)">
+                        <span class="category-name">Cornerback of the Year (CBoty)</span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="award-content">
+                        <div class="award-winner">
+                            <span>Prince Gloucestershire (McWolf)</span>
+                            <span class="season">S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="award-category">
+                    <div class="award-header" onclick="toggleCategory(this)">
+                        <span class="category-name">Offensive Player of the Year (OPoty)</span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="award-content">
+                        <div class="award-winner">
+                            <span>Skyler Murray (AW13)</span>
+                            <span class="season">S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="award-category">
+                    <div class="award-header" onclick="toggleCategory(this)">
+                        <span class="category-name">Defensive Player of the Year (DPoty)</span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="award-content">
+                        <div class="award-winner">
+                            <span>Dyrus Stone II (OMW)</span>
+                            <span class="season">S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="award-category">
+                    <div class="award-header" onclick="toggleCategory(this)">
+                        <span class="category-name">Most Valuable Player (MVP)</span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="award-content">
+                        <div class="award-winner">
+                            <span>Skyler Murray (AW13)</span>
+                            <span class="season">S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="award-category">
+                    <div class="award-header" onclick="toggleCategory(this)">
+                        <span class="category-name">General Manager of the Year (GMoty)</span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="award-content">
+                        <div class="award-winner">
+                            <span>Vorkosh</span>
+                            <span class="season">S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="award-category">
+                    <div class="award-header" onclick="toggleCategory(this)">
+                        <span class="category-name">Most Dedicated Member (MDM)</span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="award-content">
+                        <div class="award-winner">
+                            <span>Jetsqb101</span>
+                            <span class="season">S1</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="award-category">
-                <div class="award-header" onclick="toggleCategory(this)">
-                    <span class="category-name">Running Back of the Year (RBoty)</span>
-                    <span class="toggle-icon"></span>
-                </div>
-                <div class="award-content">
-                    <div class="award-winner">
-                        <span>Brian Gould (Wheaties)</span>
-                        <span class="season">S1</span>
+            <!-- Awards by User View -->
+            <div id="usersView" class="users-view">
+                <div class="user-category">
+                    <div class="user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">AW13 <span class="user-count">3 awards</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="user-content">
+                        <div class="user-award">
+                            <span>Quarterback of the Year (QBoty)</span>
+                            <span class="award-name">Skyler Murray - S1</span>
+                        </div>
+                        <div class="user-award">
+                            <span>Offensive Player of the Year (OPoty)</span>
+                            <span class="award-name">Skyler Murray - S1</span>
+                        </div>
+                        <div class="user-award">
+                            <span>Most Valuable Player (MVP)</span>
+                            <span class="award-name">Skyler Murray - S1</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="award-category">
-                <div class="award-header" onclick="toggleCategory(this)">
-                    <span class="category-name">Wide Receiver of the Year (WRoty)</span>
-                    <span class="toggle-icon"></span>
-                </div>
-                <div class="award-content">
-                    <div class="award-winner">
-                        <span>Jace Steele (Adrest)</span>
-                        <span class="season">S1</span>
+                <div class="user-category">
+                    <div class="user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Adrest <span class="user-count">2 awards</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="user-content">
+                        <div class="user-award">
+                            <span>Wide Receiver of the Year (WRoty)</span>
+                            <span class="award-name">Jace Steele - S1</span>
+                        </div>
+                        <div class="user-award">
+                            <span>Safety of the Year (Soty)</span>
+                            <span class="award-name">Ritarine Balter - S1</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="award-category">
-                <div class="award-header" onclick="toggleCategory(this)">
-                    <span class="category-name">Tight End of the Year (TEoty)</span>
-                    <span class="toggle-icon"></span>
-                </div>
-                <div class="award-content">
-                    <div class="award-winner">
-                        <span>Deci Dueye (Omg)</span>
-                        <span class="season">S1</span>
+                <div class="user-category">
+                    <div class="user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">OMW <span class="user-count">2 awards</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="user-content">
+                        <div class="user-award">
+                            <span>Defensive Player of the Year (DPOY)</span>
+                            <span class="award-name">Dyrus Stone II - S1</span>
+                        </div>
+                        <div class="user-award">
+                            <span>Linebacker of the Year (LBoty)</span>
+                            <span class="award-name">Dyrus Stone II - S1</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="award-category">
-                <div class="award-header" onclick="toggleCategory(this)">
-                    <span class="category-name">Kicker/Punter of the Year (KPoty)</span>
-                    <span class="toggle-icon"></span>
-                </div>
-                <div class="award-content">
-                    <div class="award-winner">
-                        <span>Mo Watanabe (Spyal)</span>
-                        <span class="season">S1</span>
+                <!-- Single award winners -->
+                <div class="user-category">
+                    <div class="user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Wheaties <span class="user-count">1 award</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="user-content">
+                        <div class="user-award">
+                            <span>Running Back of the Year (RBoty)</span>
+                            <span class="award-name">Brian Gould - S1</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="award-category">
-                <div class="award-header" onclick="toggleCategory(this)">
-                    <span class="category-name">Kick Returner of the Year (KRoty)</span>
-                    <span class="toggle-icon"></span>
-                </div>
-                <div class="award-content">
-                    <div class="award-winner">
-                        <span>Kim Dahyun (bobbychan)</span>
-                        <span class="season">S1</span>
+                <div class="user-category">
+                    <div class="user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Omg <span class="user-count">1 award</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="user-content">
+                        <div class="user-award">
+                            <span>Tight End of The Year (TEoty)</span>
+                            <span class="award-name">Deci Dueye - S1</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="award-category">
-                <div class="award-header" onclick="toggleCategory(this)">
-                    <span class="category-name">Linebacker of the Year (LBoty)</span>
-                    <span class="toggle-icon"></span>
-                </div>
-                <div class="award-content">
-                    <div class="award-winner">
-                        <span>Dyrus Stone II (OMW)</span>
-                        <span class="season">S1</span>
+                <div class="user-category">
+                    <div class="user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Spyal <span class="user-count">1 award</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="user-content">
+                        <div class="user-award">
+                            <span>Kicker/Punter of the Year (KPoty)</span>
+                            <span class="award-name">Mo Watanabe - S1</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="award-category">
-                <div class="award-header" onclick="toggleCategory(this)">
-                    <span class="category-name">Safety of the Year (Soty)</span>
-                    <span class="toggle-icon"></span>
-                </div>
-                <div class="award-content">
-                    <div class="award-winner">
-                        <span>Ritarine Balter (Adrest)</span>
-                        <span class="season">S1</span>
+                <div class="user-category">
+                    <div class="user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">bobbychan <span class="user-count">1 award</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="user-content">
+                        <div class="user-award">
+                            <span>Kick Returner of the Year (KRoty)</span>
+                            <span class="award-name">Kim Dahyun - S1</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="award-category">
-                <div class="award-header" onclick="toggleCategory(this)">
-                    <span class="category-name">Cornerback of the Year (CBoty)</span>
-                    <span class="toggle-icon"></span>
-                </div>
-                <div class="award-content">
-                    <div class="award-winner">
-                        <span>Prince Gloucestershire (McWolf)</span>
-                        <span class="season">S1</span>
+                <div class="user-category">
+                    <div class="user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">McWolf <span class="user-count">1 award</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="user-content">
+                        <div class="user-award">
+                            <span>Cornerback of the Year (CBoty)</span>
+                            <span class="award-name">Prince Gloucestershire - S1</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="award-category">
-                <div class="award-header" onclick="toggleCategory(this)">
-                    <span class="category-name">Offensive Player of the Year (OPoty)</span>
-                    <span class="toggle-icon"></span>
-                </div>
-                <div class="award-content">
-                    <div class="award-winner">
-                        <span>Skyler Murray (AW13)</span>
-                        <span class="season">S1</span>
+                <div class="user-category">
+                    <div class="user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Vorkosh <span class="user-count">1 award</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="user-content">
+                        <div class="user-award">
+                            <span>General Manager of the Year (GMoty)</span>
+                            <span class="award-name">Vorkosh - S1</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="award-category">
-                <div class="award-header" onclick="toggleCategory(this)">
-                    <span class="category-name">Defensive Player of the Year (DPoty)</span>
-                    <span class="toggle-icon"></span>
-                </div>
-                <div class="award-content">
-                    <div class="award-winner">
-                        <span>Dyrus Stone II (OMW)</span>
-                        <span class="season">S1</span>
+                <div class="user-category">
+                    <div class="user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Jetsqb101 <span class="user-count">1 award</span></span>
+                        <span class="toggle-icon"></span>
                     </div>
-                </div>
-            </div>
-
-            <div class="award-category">
-                <div class="award-header" onclick="toggleCategory(this)">
-                    <span class="category-name">Most Valuable Player (MVP)</span>
-                    <span class="toggle-icon"></span>
-                </div>
-                <div class="award-content">
-                    <div class="award-winner">
-                        <span>Skyler Murray (AW13)</span>
-                        <span class="season">S1</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="award-category">
-                <div class="award-header" onclick="toggleCategory(this)">
-                    <span class="category-name">General Manager of the Year (GMoty)</span>
-                    <span class="toggle-icon"></span>
-                </div>
-                <div class="award-content">
-                    <div class="award-winner">
-                        <span>Vorkosh</span>
-                        <span class="season">S1</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="award-category">
-                <div class="award-header" onclick="toggleCategory(this)">
-                    <span class="category-name">Most Dedicated Member (MDM)</span>
-                    <span class="toggle-icon"></span>
-                </div>
-                <div class="award-content">
-                    <div class="award-winner">
-                        <span>Jetsqb101</span>
-                        <span class="season">S1</span>
+                    <div class="user-content">
+                        <div class="user-award">
+                            <span>Most Dedicated Member (MDM)</span>
+                            <span class="award-name">Jetsqb101 - S1</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Awards by User View -->
-        <div id="usersView" class="users-view">
-            <div class="user-category">
-                <div class="user-header" onclick="toggleCategory(this)">
-                    <span class="user-name">AW13 <span class="user-count">3 awards</span></span>
-                    <span class="toggle-icon"></span>
+        <!-- All-Pro Section -->
+        <div id="allproSection" style="display:none">
+            <div class="view-selector">
+                <div class="view-option active" onclick="switchAllProView('teams')">By Team</div>
+                <div class="view-option" onclick="switchAllProView('users')">By User</div>
+            </div>
+
+            <!-- All-Pro by Team View -->
+            <div id="allproTeamsView" class="allpro-view view-active">
+                <div class="allpro-category">
+                    <div class="allpro-header" onclick="toggleCategory(this)">
+                        <span class="allpro-team-name">1st Team All-Pro - Season 1</span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-content">
+                        <div class="allpro-player">
+                            <span>QB: Skyler Murray @AW13</span>
+                            <span class="team-name">Offense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>RB: Brian Gould @Wheaties</span>
+                            <span class="team-name">Offense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>WR: Jace Steele @Adrest</span>
+                            <span class="team-name">Offense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>WR: George Crash Out @Spartan</span>
+                            <span class="team-name">Offense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>TE: Deci Dueye @Omg</span>
+                            <span class="team-name">Offense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>Flex: RB Dejonte Hellfire @Rockstar</span>
+                            <span class="team-name">Offense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>K: Mo Watanabe @Spyal</span>
+                            <span class="team-name">Special Teams</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>KR/PR: Kim Dahyun @bobbychan</span>
+                            <span class="team-name">Special Teams</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>LB: Dyrus Stone II @OMW</span>
+                            <span class="team-name">Defense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>LB: Demarco de la Rosa @Raindelay</span>
+                            <span class="team-name">Defense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>LB: Jimmy Ham @Turts</span>
+                            <span class="team-name">Defense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>CB: Prince Gloucestershire @McWolf</span>
+                            <span class="team-name">Defense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>CB: Jason Mendoza @Jetsqb101</span>
+                            <span class="team-name">Defense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>S: Ritarine Balter @Adrest</span>
+                            <span class="team-name">Defense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>S: Shea Adams @psanchez55</span>
+                            <span class="team-name">Defense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>Flex: LB Dov Akin @Saladani / CB Tsuyu Asui @WildfireMicro</span>
+                            <span class="team-name">Defense (TIE)</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="user-content">
-                    <div class="user-award">
-                        <span>Quarterback of the Year (QBoty)</span>
-                        <span class="award-name">Skyler Murray - S1</span>
+
+                <div class="allpro-category">
+                    <div class="allpro-header" onclick="toggleCategory(this)">
+                        <span class="allpro-team-name">2nd Team All-Pro - Season 1</span>
+                        <span class="toggle-icon"></span>
                     </div>
-                    <div class="user-award">
-                        <span>Offensive Player of the Year (OPoty)</span>
-                        <span class="award-name">Skyler Murray - S1</span>
-                    </div>
-                    <div class="user-award">
-                        <span>Most Valuable Player (MVP)</span>
-                        <span class="award-name">Skyler Murray - S1</span>
+                    <div class="allpro-content">
+                        <div class="allpro-player">
+                            <span>QB: J.C. Cloud @psanchez55</span>
+                            <span class="team-name">Offense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>RB: Da Bus @Sixersfan</span>
+                            <span class="team-name">Offense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>WR: Vincent Eliason @Kyle</span>
+                            <span class="team-name">Offense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>WR: Neville Dropski @Renomitsu</span>
+                            <span class="team-name">Offense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>TE: Hayden Winter @Dire12</span>
+                            <span class="team-name">Offense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>Flex: Jordy James @NothingButNet21 / WR Lou Monticello @Turts</span>
+                            <span class="team-name">Offense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>K: HeHateMe KicksThree @Vorkosh</span>
+                            <span class="team-name">Special Teams</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>KR/PR: Brian Gould @Wheaties</span>
+                            <span class="team-name">Special Teams</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>LB: Stephen Millwall @stevo</span>
+                            <span class="team-name">Defense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>LB: Notu Bencro @TheOnlyHobbit</span>
+                            <span class="team-name">Defense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>LB: Jade Sam Amethyst-Opal @SleepyPlayz</span>
+                            <span class="team-name">Defense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>CB: Im Nayeon @bobbychan</span>
+                            <span class="team-name">Defense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>CB: Red Baker @AW13</span>
+                            <span class="team-name">Defense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>S: Justa Ballhawk @Theory</span>
+                            <span class="team-name">Defense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>S: Bobby Plenty @Renomitsu</span>
+                            <span class="team-name">Defense</span>
+                        </div>
+                        <div class="allpro-player">
+                            <span>Flex: LB Storm Matthews @J-Cool</span>
+                            <span class="team-name">Defense</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="user-category">
-                <div class="user-header" onclick="toggleCategory(this)">
-                    <span class="user-name">Adrest <span class="user-count">2 awards</span></span>
-                    <span class="toggle-icon"></span>
-                </div>
-                <div class="user-content">
-                    <div class="user-award">
-                        <span>Wide Receiver of the Year (WRoty)</span>
-                        <span class="award-name">Jace Steele - S1</span>
+            <!-- All-Pro by User View -->
+            <div id="allproUsersView" class="allpro-users-view">
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Adrest <span class="allpro-count">2 selections</span></span>
+                        <span class="toggle-icon"></span>
                     </div>
-                    <div class="user-award">
-                        <span>Safety of the Year (Soty)</span>
-                        <span class="award-name">Ritarine Balter - S1</span>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>1st Team All-Pro WR</span>
+                            <span class="award-name">Jace Steele - S1</span>
+                        </div>
+                        <div class="allpro-user-player">
+                            <span>1st Team All-Pro S</span>
+                            <span class="award-name">Ritarine Balter - S1</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="user-category">
-                <div class="user-header" onclick="toggleCategory(this)">
-                    <span class="user-name">OMW <span class="user-count">2 awards</span></span>
-                    <span class="toggle-icon"></span>
-                </div>
-                <div class="user-content">
-                    <div class="user-award">
-                        <span>Defensive Player of the Year (DPOY)</span>
-                        <span class="award-name">Dyrus Stone II - S1</span>
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">AW13 <span class="allpro-count">2 selections</span></span>
+                        <span class="toggle-icon"></span>
                     </div>
-                    <div class="user-award">
-                        <span>Linebacker of the Year (LBoty)</span>
-                        <span class="award-name">Dyrus Stone II - S1</span>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>1st Team All-Pro QB</span>
+                            <span class="award-name">Skyler Murray - S1</span>
+                        </div>
+                        <div class="allpro-user-player">
+                            <span>2nd Team All-Pro CB</span>
+                            <span class="award-name">Red Baker - S1</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Single award winners -->
-            <div class="user-category">
-                <div class="user-header" onclick="toggleCategory(this)">
-                    <span class="user-name">Wheaties <span class="user-count">1 award</span></span>
-                    <span class="toggle-icon"></span>
-                </div>
-                <div class="user-content">
-                    <div class="user-award">
-                        <span>Running Back of the Year (RBoty)</span>
-                        <span class="award-name">Brian Gould - S1</span>
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">bobbychan <span class="allpro-count">2 selections</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>1st Team All-Pro KR/PR</span>
+                            <span class="award-name">Kim Dahyun - S1</span>
+                        </div>
+                        <div class="allpro-user-player">
+                            <span>2nd Team All-Pro CB</span>
+                            <span class="award-name">Im Nayeon - S1</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="user-category">
-                <div class="user-header" onclick="toggleCategory(this)">
-                    <span class="user-name">Omg <span class="user-count">1 award</span></span>
-                    <span class="toggle-icon"></span>
-                </div>
-                <div class="user-content">
-                    <div class="user-award">
-                        <span>Tight End of The Year (TEoty)</span>
-                        <span class="award-name">Deci Dueye - S1</span>
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Wheaties <span class="allpro-count">2 selections</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>1st Team All-Pro RB</span>
+                            <span class="award-name">Brian Gould - S1</span>
+                        </div>
+                        <div class="allpro-user-player">
+                            <span>2nd Team All-Pro KR/PR</span>
+                            <span class="award-name">Brian Gould - S1</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="user-category">
-                <div class="user-header" onclick="toggleCategory(this)">
-                    <span class="user-name">Spyal <span class="user-count">1 award</span></span>
-                    <span class="toggle-icon"></span>
-                </div>
-                <div class="user-content">
-                    <div class="user-award">
-                        <span>Kicker/Punter of the Year (KPoty)</span>
-                        <span class="award-name">Mo Watanabe - S1</span>
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">OMW <span class="allpro-count">1 selection</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>1st Team All-Pro LB</span>
+                            <span class="award-name">Dyrus Stone II - S1</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="user-category">
-                <div class="user-header" onclick="toggleCategory(this)">
-                    <span class="user-name">bobbychan <span class="user-count">1 award</span></span>
-                    <span class="toggle-icon"></span>
-                </div>
-                <div class="user-content">
-                    <div class="user-award">
-                        <span>Kick Returner of the Year (KRoty)</span>
-                        <span class="award-name">Kim Dahyun - S1</span>
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">McWolf <span class="allpro-count">1 selection</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>1st Team All-Pro CB</span>
+                            <span class="award-name">Prince Gloucestershire - S1</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="user-category">
-                <div class="user-header" onclick="toggleCategory(this)">
-                    <span class="user-name">McWolf <span class="user-count">1 award</span></span>
-                    <span class="toggle-icon"></span>
-                </div>
-                <div class="user-content">
-                    <div class="user-award">
-                        <span>Cornerback of the Year (CBoty)</span>
-                        <span class="award-name">Prince Gloucestershire - S1</span>
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Jetsqb101 <span class="allpro-count">1 selection</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>1st Team All-Pro CB</span>
+                            <span class="award-name">Jason Mendoza - S1</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="user-category">
-                <div class="user-header" onclick="toggleCategory(this)">
-                    <span class="user-name">Vorkosh <span class="user-count">1 award</span></span>
-                    <span class="toggle-icon"></span>
-                </div>
-                <div class="user-content">
-                    <div class="user-award">
-                        <span>General Manager of the Year (GMoty)</span>
-                        <span class="award-name">Vorkosh - S1</span>
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">psanchez55 <span class="allpro-count">1 selection</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>1st Team All-Pro S</span>
+                            <span class="award-name">Shea Adams - S1</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="user-category">
-                <div class="user-header" onclick="toggleCategory(this)">
-                    <span class="user-name">Jetsqb101 <span class="user-count">1 award</span></span>
-                    <span class="toggle-icon"></span>
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Raindelay <span class="allpro-count">1 selection</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>1st Team All-Pro LB</span>
+                            <span class="award-name">Demarco de la Rosa - S1</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="user-content">
-                    <div class="user-award">
-                        <span>Most Dedicated Member (MDM)</span>
-                        <span class="award-name">Jetsqb101 - S1</span>
+
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Turts <span class="allpro-count">1 selection</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>1st Team All-Pro LB</span>
+                            <span class="award-name">Jimmy Ham - S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Spartan <span class="allpro-count">1 selection</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>1st Team All-Pro WR</span>
+                            <span class="award-name">George Crash Out - S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Omg <span class="allpro-count">1 selection</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>1st Team All-Pro TE</span>
+                            <span class="award-name">Deci Dueye - S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Rockstar <span class="allpro-count">1 selection</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>1st Team All-Pro Flex</span>
+                            <span class="award-name">Dejonte Hellfire - S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Spyal <span class="allpro-count">1 selection</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>1st Team All-Pro K</span>
+                            <span class="award-name">Mo Watanabe - S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Saladani <span class="allpro-count">1 selection</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>1st Team All-Pro Flex</span>
+                            <span class="award-name">Dov Akin - S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">WildfireMicro <span class="allpro-count">1 selection</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>1st Team All-Pro Flex</span>
+                            <span class="award-name">Tsuyu Asui - S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Sixersfan <span class="allpro-count">1 selection</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>2nd Team All-Pro RB</span>
+                            <span class="award-name">Da Bus - S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Kyle <span class="allpro-count">1 selection</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>2nd Team All-Pro WR</span>
+                            <span class="award-name">Vincent Eliason - S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Renomitsu <span class="allpro-count">1 selection</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>2nd Team All-Pro WR</span>
+                            <span class="award-name">Neville Dropski - S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Dire12 <span class="allpro-count">1 selection</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>2nd Team All-Pro TE</span>
+                            <span class="award-name">Hayden Winter - S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">NothingButNet21 <span class="allpro-count">1 selection</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>2nd Team All-Pro Flex</span>
+                            <span class="award-name">Jordy James - S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Vorkosh <span class="allpro-count">1 selection</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>2nd Team All-Pro K</span>
+                            <span class="award-name">HeHateMe KicksThree - S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">stevo <span class="allpro-count">1 selection</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>2nd Team All-Pro LB</span>
+                            <span class="award-name">Stephen Millwall - S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">TheOnlyHobbit <span class="allpro-count">1 selection</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>2nd Team All-Pro LB</span>
+                            <span class="award-name">Notu Bencro - S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">SleepyPlayz <span class="allpro-count">1 selection</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>2nd Team All-Pro LB</span>
+                            <span class="award-name">Jade Sam Amethyst-Opal - S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">Theory <span class="allpro-count">1 selection</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>2nd Team All-Pro S</span>
+                            <span class="award-name">Justa Ballhawk - S1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="allpro-user-category">
+                    <div class="allpro-user-header" onclick="toggleCategory(this)">
+                        <span class="user-name">J-Cool <span class="allpro-count">1 selection</span></span>
+                        <span class="toggle-icon"></span>
+                    </div>
+                    <div class="allpro-user-content">
+                        <div class="allpro-user-player">
+                            <span>2nd Team All-Pro Flex</span>
+                            <span class="award-name">Storm Matthews - S1</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -454,17 +1005,47 @@
             }
         }
 
-        function switchView(view) {
-            // Update active tab
-            document.querySelectorAll('.view-option').forEach(opt => {
+        function switchMainView(view) {
+            // Update active main tab
+            document.querySelectorAll('.main-option').forEach(opt => {
                 opt.classList.remove('active');
             });
             event.target.classList.add('active');
 
-            // Show selected view
-            document.getElementById('awardsView').classList.remove('view-active');
-            document.getElementById('usersView').classList.remove('view-active');
-            document.getElementById(view + 'View').classList.add('view-active');
+            // Show selected section
+            document.getElementById('awardsSection').style.display = 'none';
+            document.getElementById('allproSection').style.display = 'none';
+            document.getElementById(view + 'Section').style.display = 'block';
+        }
+
+        function switchView(view) {
+            // For awards section
+            if (document.getElementById('awardsSection').style.display !== 'none') {
+                document.querySelectorAll('#awardsSection .view-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                event.target.classList.add('active');
+
+                document.getElementById('awardsView').classList.remove('view-active');
+                document.getElementById('usersView').classList.remove('view-active');
+                document.getElementById(view + 'View').classList.add('view-active');
+            }
+        }
+
+      function switchAllProView(view) {
+    // For all-pro section
+    if (document.getElementById('allproSection').style.display !== 'none') {
+        document.querySelectorAll('#allproSection .view-option').forEach(opt => {
+            opt.classList.remove('active');
+        });
+        event.target.classList.add('active');
+
+        document.getElementById('allproTeamsView').classList.remove('view-active');
+        document.getElementById('allproUsersView').classList.remove('view-active');
+        document.getElementById('allpro' + (view === 'teams' ? 'Teams' : 'Users') + 'View').classList.add('view-active');
+    }
+}
+            }
         }
     </script>
 </body>
