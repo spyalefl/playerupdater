@@ -1284,7 +1284,7 @@
         </div>
     </div>
 
-    <script>
+<script>
         function toggleCategory(header) {
             header.classList.toggle("active");
             const content = header.nextElementSibling;
@@ -1305,6 +1305,7 @@
             // Show selected section
             document.getElementById('awardsSection').style.display = 'none';
             document.getElementById('allproSection').style.display = 'none';
+            document.getElementById('championsSection').style.display = 'none';
             document.getElementById(view + 'Section').style.display = 'block';
         }
 
@@ -1322,20 +1323,21 @@
             }
         }
 
-      function switchAllProView(view) {
-    // For all-pro section
-    if (document.getElementById('allproSection').style.display !== 'none') {
-        document.querySelectorAll('#allproSection .view-option').forEach(opt => {
-            opt.classList.remove('active');
-        });
-        event.target.classList.add('active');
+        function switchAllProView(view) {
+            // For all-pro section
+            if (document.getElementById('allproSection').style.display !== 'none') {
+                document.querySelectorAll('#allproSection .view-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                event.target.classList.add('active');
 
-        document.getElementById('allproTeamsView').classList.remove('view-active');
-        document.getElementById('allproUsersView').classList.remove('view-active');
-        document.getElementById('allpro' + (view === 'teams' ? 'Teams' : 'Users') + 'View').classList.add('view-active');
-    }
-}
-          function switchChampionsView(view) {
+                document.getElementById('allproTeamsView').classList.remove('view-active');
+                document.getElementById('allproUsersView').classList.remove('view-active');
+                document.getElementById('allpro' + (view === 'teams' ? 'Teams' : 'Users') + 'View').classList.add('view-active');
+            }
+        }
+
+        function switchChampionsView(view) {
             // For champions section
             if (document.getElementById('championsSection').style.display !== 'none') {
                 document.querySelectorAll('#championsSection .view-option').forEach(opt => {
@@ -1349,6 +1351,6 @@
             }
         }
     </script>
-    </script>
 </body>
 </html>
+Run
