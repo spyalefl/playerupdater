@@ -56,6 +56,11 @@
             border-radius: 4px;
         }
 
+        .invalid-input {
+            background-color: #ffebee;
+            border-color: #c62828;
+        }
+
         /* Keep all previous attribute-related styles */
         .attribute-grid {
             display: grid;
@@ -144,6 +149,16 @@
             max-width: 600px;
             border-radius: 5px;
         }
+        
+        .attribute-capped {
+            background-color: #fff3e0;
+        }
+        
+        .attribute-cap-label {
+            font-size: 0.8em;
+            color: #e65100;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -163,10 +178,12 @@
             <div class="info-group">
                 <label>Height (in):</label>
                 <input type="number" id="height" min="50" max="90" required>
+                <span id="heightRange" style="font-size: 0.8em; color: #666;"></span>
             </div>
             <div class="info-group">
                 <label>Weight (lbs):</label>
                 <input type="number" id="weight" min="150" max="350" required>
+                <span id="weightRange" style="font-size: 0.8em; color: #666;"></span>
             </div>
             <div class="info-group">
                 <label>Jersey Number:</label>
@@ -202,10 +219,10 @@
 
         <div class="attribute-grid" id="attributesGrid"></div>
 
-        <div id="totalTPE" class="total-tpe valid-tpe">Total TPE Used: 0/400</div>
+        <div id="totalTPE" class="total-tpe valid-tpe">Total TPE Used: 0/250</div>
 
         <button id="createButton" disabled style="width: 100%; padding: 15px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">
-            Create Player (400 TPE Required)
+            Create Player (Max 250 TPE)
         </button>
 
         <div class="modal" id="outputModal">
@@ -224,26 +241,171 @@
         // Archetype data
         const archetypes = {
             'QB': ['Pocket Passer', 'Gunslinger', 'Dual-Threat'],
-            'RB': ['One-Cut', 'Workhorse', 'Scat Back'],
-            'FB': ['Runner', 'Blocker', 'HBack'],
-            'WR': ['Deep Threat', 'Posession', 'Redzone'],
+            'RB': ['Scat Back', 'One-Cut', 'Workhorse'],
+            'FB': ['Runner', 'Blocker'],
+            'WR': ['Deep Threat', 'Possession', 'Red Zone'],
             'TE': ['Vertical Threat', 'Possession', 'Blocking'],
             'LB': ['Balanced', 'Coverage', 'Pass Rusher'],
             'CB': ['Man Cover', 'Zone Cover', 'Run Support'],
-            'FS': ['Man Cover', 'Zone Cover', 'Run Support'],
-            'SS': ['Man Cover', 'Zone Cover', 'Run Support'],
+            'FS': ['Run Support', 'Zone Cover', 'Ball Hawk'],
+            'SS': ['Run Support', 'Zone Cover', 'Hard Hitter'],
             'K/P': ['Power', 'Accurate']
         };
 
-        // Attribute caps
+        // Attribute caps by position and archetype
         const archetypeCaps = {
-            // QB
-            'Pocket Passer': { AGI: 60, SPD: 60, ARM: 90 },
-            'Gunslinger': { AGI: 80, SPD: 80, INT: 90, ACC: 90 },
-            'Dual-Threat': { INT: 80, SPD: 90, ACC: 90 },
-            // RB
-            'One-Cut': { STR: 60, INT: 80, AGI: 90 },
-            // ... Add all other archetype caps here
+            'QB': {
+                'Pocket Passer': { 'Agility': 70, 'Speed': 70, 'Arm': 90 },
+                'Gunslinger': { 'Agility': 70, 'Speed': 70, 'Intelligence': 90 },
+                'Dual-Threat': { 'Speed': 90, 'Throw Accuracy': 90, 'Arm': 90 }
+            },
+            'RB': {
+                'Scat Back': { 'Strength': 70, 'Hands': 80 },
+                'One-Cut': { 'Hands': 70, 'Strength': 80 },
+                'Workhorse': { 'Hands': 70, 'Speed': 90, 'Agility': 90 }
+            },
+            'FB': {
+                'Runner': { 'Run Blocking': 80, 'Pass Blocking': 80, 'Hands': 80, 'Speed': 90, 'Strength': 90 },
+                'Blocker': { 'Hands': 70, 'Agility': 80, 'Speed': 85 }
+            },
+            'WR': {
+                'Deep Threat': { 'Strength': 60, 'Intelligence': 80, 'Hands': 85 },
+                'Possession': { 'Strength': 80, 'Speed': 90, 'Agility': 95 },
+                'Red Zone': { 'Strength': 90, 'Speed': 90, 'Agility': 90, 'Hands': 90 }
+            },
+            'TE': {
+                'Vertical Threat': { 'Pass Blocking': 70, 'Run Blocking': 70, 'Strength': 70, 'Hands': 85 },
+                'Possession': { 'Speed': 90, 'Agility': 90, 'Strength': 90, 'Pass Blocking': 90, 'Run Blocking': 90 },
+                'Blocking': { 'Speed': 80, 'Hands': 80 }
+            },
+            'LB': {
+                'Balanced': { 'Hands': 80, 'Speed': 90, 'Agility': 90, 'Strength': 90 },
+                'Coverage': { 'Strength': 80, 'Tackling': 80, 'Intelligence': 90 },
+                'Pass Rusher': { 'Hands': 70, 'Intelligence': 80, 'Tackling': 85, 'Speed': 90, 'Agility': 90 }
+            },
+            'SS': {
+                'Run Support': { 'Hands': 70, 'Speed': 90, 'Agility': 90 },
+                'Zone Cover': { 'Tackling': 85, 'Strength': 85, 'Speed': 90, 'Hands': 90 },
+                'Hard Hitter': { 'Intelligence': 70, 'Hands': 70, 'Agility': 80, 'Tackling': 90 }
+            },
+            'FS': {
+                'Run Support': { 'Hands': 70, 'Speed': 90, 'Agility': 90 },
+                'Zone Cover': { 'Tackling': 85, 'Strength': 85, 'Speed': 90, 'Hands': 90 },
+                'Ball Hawk': { 'Strength': 70, 'Tackling': 80, 'Agility': 90, 'Intelligence': 90 }
+            },
+            'CB': {
+                'Man Cover': { 'Tackling': 70, 'Strength': 70, 'Hands': 80, 'Intelligence': 90 },
+                'Zone Cover': { 'Tackling': 85, 'Strength': 85, 'Speed': 90, 'Hands': 90 },
+                'Run Support': { 'Hands': 70, 'Speed': 90, 'Agility': 90 }
+            },
+            'K/P': {
+                'Power': { 'Kick Accuracy': 90, 'Intelligence': 90 },
+                'Accurate': { 'Kick Power': 90, 'Intelligence': 90 }
+            }
+        };
+
+        // Position weight limits
+        const weightLimits = {
+            'QB': {
+                'Pocket Passer': { min: 215, max: 240, absoluteMax: 250 },
+                'Gunslinger': { min: 200, max: 225, absoluteMax: 235 },
+                'Dual-Threat': { min: 190, max: 220, absoluteMax: 230 }
+            },
+            'RB': {
+                'Scat Back': { min: 185, max: 210, absoluteMax: 230 },
+                'One-Cut': { min: 185, max: 210, absoluteMax: 230 },
+                'Workhorse': { min: 185, max: 230, absoluteMax: 250 }
+            },
+            'FB': {
+                'Runner': { min: 235, max: 245, absoluteMax: 255 },
+                'Blocker': { min: 235, max: 280, absoluteMax: 300 }
+            },
+            'WR': {
+                'Deep Threat': { min: 165, max: 200, absoluteMax: 220 },
+                'Possession': { min: 180, max: 210, absoluteMax: 230 },
+                'Red Zone': { min: 185, max: 225, absoluteMax: 245 }
+            },
+            'TE': {
+                'Vertical Threat': { min: 225, max: 235, absoluteMax: 250 },
+                'Possession': { min: 225, max: 240, absoluteMax: 260 },
+                'Blocking': { min: 230, max: 280, absoluteMax: 300 }
+            },
+            'K/P': {
+                'Power': { min: 170, max: 200, absoluteMax: 220 },
+                'Accurate': { min: 170, max: 200, absoluteMax: 220 }
+            },
+            'LB': {
+                'Balanced': { min: 225, max: 245, absoluteMax: 255 },
+                'Coverage': { min: 220, max: 240, absoluteMax: 240 },
+                'Pass Rusher': { min: 230, max: 250, absoluteMax: 260 }
+            },
+            'SS': {
+                'Run Support': { min: 200, max: 220, absoluteMax: 240 },
+                'Zone Cover': { min: 190, max: 210, absoluteMax: 230 },
+                'Hard Hitter': { min: 190, max: 210, absoluteMax: 230 }
+            },
+            'FS': {
+                'Run Support': { min: 200, max: 220, absoluteMax: 240 },
+                'Zone Cover': { min: 190, max: 210, absoluteMax: 230 },
+                'Ball Hawk': { min: 180, max: 200, absoluteMax: 220 }
+            },
+            'CB': {
+                'Man Cover': { min: 170, max: 190, absoluteMax: 210 },
+                'Zone Cover': { min: 180, max: 200, absoluteMax: 220 },
+                'Run Support': { min: 190, max: 210, absoluteMax: 230 }
+            }
+        };
+
+        // Position height limits
+        const heightLimits = {
+            'QB': {
+                'Pocket Passer': { min: 72, max: 78 },
+                'Gunslinger': { min: 70, max: 75 },
+                'Dual-Threat': { min: 70, max: 74 }
+            },
+            'RB': {
+                'Scat Back': { min: 68, max: 72 },
+                'One-Cut': { min: 68, max: 73 },
+                'Workhorse': { min: 70, max: 74 }
+            },
+            'FB': {
+                'Runner': { min: 70, max: 75 },
+                'Blocker': { min: 70, max: 75 }
+            },
+            'WR': {
+                'Deep Threat': { min: 68, max: 72 },
+                'Possession': { min: 70, max: 74 },
+                'Red Zone': { min: 72, max: 76 }
+            },
+            'TE': {
+                'Vertical Threat': { min: 72, max: 76 },
+                'Possession': { min: 74, max: 77 },
+                'Blocking': { min: 75, max: 79 }
+            },
+            'K/P': {
+                'Power': { min: 65, max: 73 },
+                'Accurate': { min: 65, max: 73 }
+            },
+            'LB': {
+                'Balanced': { min: 72, max: 75 },
+                'Coverage': { min: 71, max: 74 },
+                'Pass Rusher': { min: 74, max: 77 }
+            },
+            'SS': {
+                'Run Support': { min: 72, max: 74 },
+                'Zone Cover': { min: 70, max: 74 },
+                'Hard Hitter': { min: 72, max: 74 }
+            },
+            'FS': {
+                'Run Support': { min: 72, max: 74 },
+                'Zone Cover': { min: 70, max: 74 },
+                'Ball Hawk': { min: 69, max: 73 }
+            },
+            'CB': {
+                'Man Cover': { min: 68, max: 72 },
+                'Zone Cover': { min: 70, max: 73 },
+                'Run Support': { min: 72, max: 74 }
+            }
         };
 
         const attributes = [
@@ -261,6 +423,7 @@
                 <span class="attribute-name">${attr}</span>
                 <input type="number" min="35" max="99" value="35" class="attribute-input" data-attribute="${attr}">
                 <span class="tpe-cost">0</span>
+                <span class="attribute-cap-label" style="display: none;"></span>
             `;
             grid.appendChild(div);
         });
@@ -281,6 +444,63 @@
             } else {
                 archetypeSelect.disabled = true;
             }
+            
+            // Reset all attribute caps
+            document.querySelectorAll('.attribute-input').forEach(input => {
+                input.max = 99;
+                input.parentElement.classList.remove('attribute-capped');
+                input.parentElement.querySelector('.attribute-cap-label').style.display = 'none';
+            });
+            
+            // Reset height/weight placeholders
+            document.getElementById('height').placeholder = '';
+            document.getElementById('weight').placeholder = '';
+            document.getElementById('heightRange').textContent = '';
+            document.getElementById('weightRange').textContent = '';
+            
+            updateTotals();
+        });
+
+        // Archetype change handler
+        document.getElementById('archetype').addEventListener('change', function() {
+            const position = document.getElementById('position').value;
+            const archetype = this.value;
+            
+            if (position && archetype) {
+                // Update weight limits
+                const weightInput = document.getElementById('weight');
+                const weightLim = weightLimits[position][archetype];
+                weightInput.min = weightLim.min;
+                weightInput.max = weightLim.absoluteMax;
+                document.getElementById('weightRange').textContent = `${weightLim.min}-${weightLim.max} (max ${weightLim.absoluteMax})`;
+                
+                // Update height limits
+                const heightInput = document.getElementById('height');
+                const heightLim = heightLimits[position][archetype];
+                heightInput.min = heightLim.min;
+                heightInput.max = heightLim.max;
+                document.getElementById('heightRange').textContent = `${heightLim.min}-${heightLim.max}`;
+                
+                // Update attribute caps
+                const caps = archetypeCaps[position][archetype];
+                document.querySelectorAll('.attribute-input').forEach(input => {
+                    const attr = input.dataset.attribute;
+                    const capLabel = input.parentElement.querySelector('.attribute-cap-label');
+                    
+                    if (caps[attr]) {
+                        input.max = caps[attr];
+                        input.parentElement.classList.add('attribute-capped');
+                        capLabel.textContent = `(Max ${caps[attr]})`;
+                        capLabel.style.display = 'inline';
+                    } else {
+                        input.max = 99;
+                        input.parentElement.classList.remove('attribute-capped');
+                        capLabel.style.display = 'none';
+                    }
+                });
+            }
+            
+            updateTotals();
         });
 
         // TPE calculation
@@ -299,43 +519,97 @@
             return tpe;
         }
 
+        // Validate height and weight
+        function validatePhysicalAttributes() {
+            const position = document.getElementById('position').value;
+            const archetype = document.getElementById('archetype').value;
+            const heightInput = document.getElementById('height');
+            const weightInput = document.getElementById('weight');
+            
+            if (position && archetype) {
+                const heightLim = heightLimits[position][archetype];
+                const weightLim = weightLimits[position][archetype];
+                
+                const height = parseInt(heightInput.value) || 0;
+                const weight = parseInt(weightInput.value) || 0;
+                
+                // Validate height
+                if (height < heightLim.min || height > heightLim.max) {
+                    heightInput.classList.add('invalid-input');
+                } else {
+                    heightInput.classList.remove('invalid-input');
+                }
+                
+                // Validate weight
+                if (weight < weightLim.min || weight > weightLim.absoluteMax) {
+                    weightInput.classList.add('invalid-input');
+                } else {
+                    weightInput.classList.remove('invalid-input');
+                }
+            }
+        }
+
         // Update totals and validation
         function updateTotals() {
             let total = 0;
             document.querySelectorAll('.attribute-input').forEach(input => {
                 let value = parseInt(input.value) || 35;
-                value = Math.min(Math.max(value, 35), 99);
+                const max = parseInt(input.max);
+                
+                // Only enforce max on blur, not during typing
+                if (!input.hasAttribute('data-typing')) {
+                    value = Math.min(Math.max(value, 35), max);
+                    input.value = value;
+                }
+                
                 const tpeCost = calculateTPE(value);
                 input.parentElement.querySelector('.tpe-cost').textContent = tpeCost;
                 total += tpeCost;
             });
 
             const tpeDisplay = document.getElementById('totalTPE');
-            tpeDisplay.textContent = `Total TPE Used: ${total}/400`;
-            tpeDisplay.className = `total-tpe ${total > 400 ? 'invalid-tpe' : 'valid-tpe'}`;
+            tpeDisplay.textContent = `Total TPE Used: ${total}/250`;
+            tpeDisplay.className = `total-tpe ${total > 250 ? 'invalid-tpe' : 'valid-tpe'}`;
+
+            // Validate height and weight
+            validatePhysicalAttributes();
 
             // Enable/disable create button
-            const allFilled = [...document.querySelectorAll('input, select')].every(el => el.checkValidity());
-            document.getElementById('createButton').disabled = total > 400 || !allFilled;
+            const allFilled = [...document.querySelectorAll('input, select')].every(el => {
+                if (el.required && !el.value) return false;
+                return true;
+            });
+            const heightValid = !document.getElementById('height').classList.contains('invalid-input');
+            const weightValid = !document.getElementById('weight').classList.contains('invalid-input');
+            const tpeValid = total <= 250;
+            
+            document.getElementById('createButton').disabled = !allFilled || !heightValid || !weightValid || !tpeValid;
         }
 
-        // Event listeners
+        // Event listeners for attribute inputs
         document.querySelectorAll('.attribute-input').forEach(input => {
-            input.addEventListener('input', function(e) {
-                this.removeAttribute('min');
-                this.removeAttribute('max');
+            input.addEventListener('focus', function() {
+                this.setAttribute('data-typing', 'true');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.removeAttribute('data-typing');
+                let value = parseInt(this.value) || 35;
+                const max = parseInt(this.max);
+                value = Math.min(Math.max(value, 35), max);
+                this.value = value;
                 updateTotals();
             });
-
-            input.addEventListener('blur', function(e) {
-                let value = parseInt(this.value) || 35;
-                value = Math.min(Math.max(value, 35), 99);
-                this.value = value;
-                this.setAttribute('min', 35);
-                this.setAttribute('max', 99);
+            
+            input.addEventListener('input', function() {
+                // Allow typing without immediate validation
                 updateTotals();
             });
         });
+
+        // Height/weight validation
+        document.getElementById('height').addEventListener('input', updateTotals);
+        document.getElementById('weight').addEventListener('input', updateTotals);
 
         document.getElementById('createButton').addEventListener('click', function() {
             const playerData = {
@@ -347,14 +621,18 @@
                 discord: document.getElementById('discord').value,
                 position: document.getElementById('position').value,
                 archetype: document.getElementById('archetype').value,
-                attributes: {}
+                attributes: {},
+                caps: {}
             };
 
+            // Get attributes and caps
             document.querySelectorAll('.attribute-input').forEach(input => {
-                playerData.attributes[input.dataset.attribute] = input.value;
+                const attr = input.dataset.attribute;
+                playerData.attributes[attr] = input.value;
+                playerData.caps[attr] = input.max;
             });
 
-            // Generate BBCode
+            // Generate BBCode with caps information
             const bbcode = `[b]Player Information[/b]
 [b]Name:[/b] ${playerData.firstName} ${playerData.lastName}
 [b]Position:[/b] ${playerData.position}
@@ -365,14 +643,18 @@
 [b]Discord:[/b] ${playerData.discord}
 
 [b]Attributes:[/b]
-${Object.entries(playerData.attributes).map(([attr, value]) => `${attr}: ${value}`).join('\n')}`;
+${Object.entries(playerData.attributes).map(([attr, value]) => {
+    const cap = playerData.caps[attr] < 99 ? ` (Max ${playerData.caps[attr]})` : '';
+    return `${attr}: ${value}${cap}`;
+}).join('\n')}
+
+[b]Total TPE:[/b] ${document.getElementById('totalTPE').textContent.split('/')[1].trim()}`;
 
             document.getElementById('bbcode-output').textContent = bbcode;
             document.getElementById('outputModal').style.display = 'block';
         });
 
         // Initial setup
-        document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', updateTotals));
         updateTotals();
     </script>
 </body>
