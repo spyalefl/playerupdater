@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Activity Checker</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        #status { font-size: 24px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<h1>Forum User Activity Checker</h1>
+<p>Monitoring user: <strong id="username">JohnDoe</strong></p>
+<div id="status">Checking...</div>
+
+<script>
+    const forumUrl = 'https://eflnow.jcink.net/index.php?showtopic=192'; // Replace with the actual forum URL
+    const userToCheck = 'Spyal';
+    const twoWeeksInMilliseconds = 14 * 24 * 60 * 60 * 1000;
+
+    async function checkUserActivity() {
+        try {
+            const response = await fetch(forumUrl);
+            const text = await response.text();
+            
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(text, 'text/html');
+            
+            let posts = Array.from(doc.querySelectorAll('.post')); // Adjust selector for the forum
+            let now = Date.now();
+            let active = false;
+
+            for (let post of posts) {
+                let author = post.querySelector('.username').innerText.trim(); // Adjust selector
+                let timeString = post.querySelector('.post-date').innerText.trim(); // Adjust selector
+                
+                let postDate = new Date(timeString);
+                
+                if (author === userToCheck && (now - postDate.getTime()) <= twoWeeksInMilliseconds) {
+                    active = true;
+                    break;
+                }
+            }
+
+            document.getElementById('status').textContent = active ? "Active" : "Inactive";
+        } catch (error) {
+            console.error('Error checking user activity:', error);
+            document.getElementById('status').textContent = "Error fetching forum.";
+        }
+    }
+
+    // Run immediately
+    checkUserActivity();
+    // Run every hour (3600000 milliseconds)
+    setInterval(checkUserActivity, 3600000);
+</script>
+
+</body>
+</html>
