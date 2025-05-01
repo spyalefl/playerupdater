@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>All-Time Passing Leaders</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      background: #ddd;
+      margin: 0 5px;
+      border-radius: 5px;
+    }
+    .tab.active {
+      background: #333;
+      color: white;
+    }
+    table {
+      width: 80%;
+      margin: 0 auto;
+      border-collapse: collapse;
+      background: white;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    .rank-icon {
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <h1>All-Time Passing Leaders</h1>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('att')">Attempts</div>
+    <div class="tab" onclick="switchTab('comp')">Completions</div>
+    <div class="tab" onclick="switchTab('yards')">Yards</div>
+    <div class="tab" onclick="switchTab('td')">Touchdowns</div>
+    <div class="tab" onclick="switchTab('int')">Interceptions</div>
+  </div>
+
+  <div id="att" class="table-container">
+    <table>
+      <tr><th>Rank</th><th>Player</th><th>Attempts</th></tr>
+      <tr><td><span class="rank-icon">🏆</span></td><td>Cloud, J.</td><td>1109</td></tr>
+      <tr><td><span class="rank-icon">🥈</span></td><td>Murray, S.</td><td>1107</td></tr>
+      <tr><td><span class="rank-icon">🥉</span></td><td>Gravy, T.</td><td>1029</td></tr>
+      <tr><td>4</td><td>Krieger, D.</td><td>999</td></tr>
+      <tr><td>5</td><td>Demarco, W.</td><td>686</td></tr>
+    </table>
+  </div>
+
+  <div id="comp" class="table-container" style="display:none">
+    <table>
+      <tr><th>Rank</th><th>Player</th><th>Completions</th></tr>
+      <tr><td><span class="rank-icon">🏆</span></td><td>Cloud, J.</td><td>696</td></tr>
+      <tr><td><span class="rank-icon">🥈</span></td><td>Murray, S.</td><td>668</td></tr>
+      <tr><td><span class="rank-icon">🥉</span></td><td>Gravy, T.</td><td>619</td></tr>
+      <tr><td>4</td><td>Krieger, D.</td><td>616</td></tr>
+      <tr><td>5</td><td>Demarco, W.</td><td>443</td></tr>
+    </table>
+  </div>
+
+  <div id="yards" class="table-container" style="display:none">
+    <table>
+      <tr><th>Rank</th><th>Player</th><th>Yards</th></tr>
+      <tr><td><span class="rank-icon">🏆</span></td><td>Cloud, J.</td><td>7717</td></tr>
+      <tr><td><span class="rank-icon">🥈</span></td><td>Murray, S.</td><td>7561</td></tr>
+      <tr><td><span class="rank-icon">🥉</span></td><td>Gravy, T.</td><td>6871</td></tr>
+      <tr><td>4</td><td>Krieger, D.</td><td>6815</td></tr>
+      <tr><td>5</td><td>Forscythe, D.</td><td>6301</td></tr>
+    </table>
+  </div>
+
+  <div id="td" class="table-container" style="display:none">
+    <table>
+      <tr><th>Rank</th><th>Player</th><th>TDs</th></tr>
+      <tr><td><span class="rank-icon">🏆</span></td><td>Murray, S.</td><td>62</td></tr>
+      <tr><td><span class="rank-icon">🥈</span></td><td>Gravy, T.</td><td>49</td></tr>
+      <tr><td><span class="rank-icon">🥉</span></td><td>Cloud, J.</td><td>48</td></tr>
+      <tr><td>4</td><td>Krieger, D.</td><td>44</td></tr>
+      <tr><td>5</td><td>Demarco, W.</td><td>28</td></tr>
+    </table>
+  </div>
+
+  <div id="int" class="table-container" style="display:none">
+    <table>
+      <tr><th>Rank</th><th>Player</th><th>INTs</th></tr>
+      <tr><td><span class="rank-icon">🏆</span></td><td>Forscythe, D.</td><td>30</td></tr>
+      <tr><td><span class="rank-icon">🥈</span></td><td>Murray, S.</td><td>29</td></tr>
+      <tr><td><span class="rank-icon">🥉</span></td><td>Cloud, J.</td><td>27</td></tr>
+      <tr><td>4</td><td>Gravy, T.</td><td>26</td></tr>
+      <tr><td>5</td><td>Krieger, D.</td><td>26</td></tr>
+    </table>
+  </div>
+
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.table-container').forEach(t => t.style.display = 'none');
+      document.getElementById(tabId).style.display = 'block';
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+  </script>
+</body>
+</html>
