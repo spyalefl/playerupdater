@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>All-Time Passing Leaders</title>
+  <title>All-Time Leaders</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -13,20 +13,37 @@
     h1 {
       text-align: center;
     }
-    .tabs {
+    .category-tabs {
       display: flex;
       justify-content: center;
       margin-bottom: 20px;
     }
-    .tab {
+    .category-tab {
       padding: 10px 20px;
       cursor: pointer;
       background: #ddd;
       margin: 0 5px;
       border-radius: 5px;
+      font-weight: bold;
     }
-    .tab.active {
+    .category-tab.active {
       background: #333;
+      color: white;
+    }
+    .stat-tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .stat-tab {
+      padding: 8px 15px;
+      cursor: pointer;
+      background: #eee;
+      margin: 0 3px;
+      border-radius: 3px;
+    }
+    .stat-tab.active {
+      background: #666;
       color: white;
     }
     table {
@@ -43,79 +60,170 @@
     .rank-icon {
       font-size: 1.2em;
     }
+    .table-container {
+      display: none;
+    }
+    .table-container.active {
+      display: block;
+    }
   </style>
 </head>
 <body>
-  <h1>All-Time Passing Leaders</h1>
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('att')">Attempts</div>
-    <div class="tab" onclick="switchTab('comp')">Completions</div>
-    <div class="tab" onclick="switchTab('yards')">Yards</div>
-    <div class="tab" onclick="switchTab('td')">Touchdowns</div>
-    <div class="tab" onclick="switchTab('int')">Interceptions</div>
+  <h1>All-Time Leaders</h1>
+  
+  <div class="category-tabs">
+    <div class="category-tab active" onclick="switchCategory('passing')">Passing</div>
+    <div class="category-tab" onclick="switchCategory('rushing')">Rushing</div>
   </div>
 
-  <div id="att" class="table-container">
+  <!-- Passing Tabs -->
+  <div id="passing-tabs" class="stat-tabs">
+    <div class="stat-tab active" onclick="switchStat('passing', 'att')">Attempts</div>
+    <div class="stat-tab" onclick="switchStat('passing', 'comp')">Completions</div>
+    <div class="stat-tab" onclick="switchStat('passing', 'yards')">Yards</div>
+    <div class="stat-tab" onclick="switchStat('passing', 'td')">Touchdowns</div>
+    <div class="stat-tab" onclick="switchStat('passing', 'int')">Interceptions</div>
+  </div>
+
+  <!-- Passing Tables -->
+  <div id="passing-att" class="table-container active">
     <table>
       <tr><th>Rank</th><th>Player</th><th>Attempts</th></tr>
       <tr><td><span class="rank-icon">🏆</span></td><td>Cloud, J.</td><td>1109</td></tr>
       <tr><td><span class="rank-icon">🥈</span></td><td>Murray, S.</td><td>1107</td></tr>
       <tr><td><span class="rank-icon">🥉</span></td><td>Gravy, T.</td><td>1029</td></tr>
-      <tr><td>4</td><td>Krieger, D.</td><td>999</td></tr>
+      <tr><td>4</td><td>Krieger (D. + A.)</td><td>999</td></tr>
       <tr><td>5</td><td>Demarco, W.</td><td>686</td></tr>
     </table>
   </div>
 
-  <div id="comp" class="table-container" style="display:none">
+  <div id="passing-comp" class="table-container">
     <table>
       <tr><th>Rank</th><th>Player</th><th>Completions</th></tr>
       <tr><td><span class="rank-icon">🏆</span></td><td>Cloud, J.</td><td>696</td></tr>
       <tr><td><span class="rank-icon">🥈</span></td><td>Murray, S.</td><td>668</td></tr>
       <tr><td><span class="rank-icon">🥉</span></td><td>Gravy, T.</td><td>619</td></tr>
-      <tr><td>4</td><td>Krieger, D.</td><td>616</td></tr>
+      <tr><td>4</td><td>Krieger (D. + A.)</td><td>616</td></tr>
       <tr><td>5</td><td>Demarco, W.</td><td>443</td></tr>
     </table>
   </div>
 
-  <div id="yards" class="table-container" style="display:none">
+  <div id="passing-yards" class="table-container">
     <table>
       <tr><th>Rank</th><th>Player</th><th>Yards</th></tr>
       <tr><td><span class="rank-icon">🏆</span></td><td>Cloud, J.</td><td>7717</td></tr>
       <tr><td><span class="rank-icon">🥈</span></td><td>Murray, S.</td><td>7561</td></tr>
       <tr><td><span class="rank-icon">🥉</span></td><td>Gravy, T.</td><td>6871</td></tr>
-      <tr><td>4</td><td>Krieger, D.</td><td>6815</td></tr>
+      <tr><td>4</td><td>Krieger (D. + A.)</td><td>6815</td></tr>
       <tr><td>5</td><td>Forscythe, D.</td><td>6301</td></tr>
     </table>
   </div>
 
-  <div id="td" class="table-container" style="display:none">
+  <div id="passing-td" class="table-container">
     <table>
       <tr><th>Rank</th><th>Player</th><th>TDs</th></tr>
       <tr><td><span class="rank-icon">🏆</span></td><td>Murray, S.</td><td>62</td></tr>
       <tr><td><span class="rank-icon">🥈</span></td><td>Gravy, T.</td><td>49</td></tr>
       <tr><td><span class="rank-icon">🥉</span></td><td>Cloud, J.</td><td>48</td></tr>
-      <tr><td>4</td><td>Krieger, D.</td><td>44</td></tr>
+      <tr><td>4</td><td>Krieger (D. + A.)</td><td>44</td></tr>
       <tr><td>5</td><td>Demarco, W.</td><td>28</td></tr>
     </table>
   </div>
 
-  <div id="int" class="table-container" style="display:none">
+  <div id="passing-int" class="table-container">
     <table>
       <tr><th>Rank</th><th>Player</th><th>INTs</th></tr>
       <tr><td><span class="rank-icon">🏆</span></td><td>Forscythe, D.</td><td>30</td></tr>
       <tr><td><span class="rank-icon">🥈</span></td><td>Murray, S.</td><td>29</td></tr>
       <tr><td><span class="rank-icon">🥉</span></td><td>Cloud, J.</td><td>27</td></tr>
       <tr><td>4</td><td>Gravy, T.</td><td>26</td></tr>
-      <tr><td>5</td><td>Krieger, D.</td><td>26</td></tr>
+      <tr><td>5</td><td>Krieger (D. + A.)</td><td>26</td></tr>
+    </table>
+  </div>
+
+  <!-- Rushing Tabs -->
+  <div id="rushing-tabs" class="stat-tabs" style="display:none">
+    <div class="stat-tab active" onclick="switchStat('rushing', 'att')">Attempts</div>
+    <div class="stat-tab" onclick="switchStat('rushing', 'yards')">Yards</div>
+    <div class="stat-tab" onclick="switchStat('rushing', 'td')">Touchdowns</div>
+  </div>
+
+  <!-- Rushing Tables -->
+  <div id="rushing-att" class="table-container">
+    <table>
+      <tr><th>Rank</th><th>Player</th><th>Attempts</th></tr>
+      <tr><td><span class="rank-icon">🏆</span></td><td>Gould, B.</td><td>332</td></tr>
+      <tr><td><span class="rank-icon">🥈</span></td><td>Bus, D.</td><td>234</td></tr>
+      <tr><td><span class="rank-icon">🥉</span></td><td>James, J.</td><td>240</td></tr>
+      <tr><td>4</td><td>Jones IV Sr, M.</td><td>230</td></tr>
+      <tr><td>5</td><td>Hellfire, D.</td><td>230</td></tr>
+    </table>
+  </div>
+
+  <div id="rushing-yards" class="table-container">
+    <table>
+      <tr><th>Rank</th><th>Player</th><th>Yards</th></tr>
+      <tr><td><span class="rank-icon">🏆</span></td><td>Gould, B.</td><td>1625</td></tr>
+      <tr><td><span class="rank-icon">🥈</span></td><td>Bus, D.</td><td>1192</td></tr>
+      <tr><td><span class="rank-icon">🥉</span></td><td>Jones IV Sr, M.</td><td>1181</td></tr>
+      <tr><td>4</td><td>James, J.</td><td>1178</td></tr>
+      <tr><td>5</td><td>Hellfire, D.</td><td>1177</td></tr>
+    </table>
+  </div>
+
+  <div id="rushing-td" class="table-container">
+    <table>
+      <tr><th>Rank</th><th>Player</th><th>TDs</th></tr>
+      <tr><td><span class="rank-icon">🏆</span></td><td>Gould, B.</td><td>17</td></tr>
+      <tr><td><span class="rank-icon">🥈</span></td><td>Bus, D.</td><td>13</td></tr>
+      <tr><td><span class="rank-icon">🥉</span></td><td>James, J.</td><td>13</td></tr>
+      <tr><td>4</td><td>Hellfire, D.</td><td>12</td></tr>
+      <tr><td>5</td><td>Jones IV Sr, M.</td><td>10</td></tr>
     </table>
   </div>
 
   <script>
-    function switchTab(tabId) {
-      document.querySelectorAll('.table-container').forEach(t => t.style.display = 'none');
-      document.getElementById(tabId).style.display = 'block';
-      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+    let currentCategory = 'passing';
+    let currentStat = {
+      passing: 'att',
+      rushing: 'att'
+    };
+
+    function switchCategory(category) {
+      // Update category tabs
+      document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
       event.target.classList.add('active');
+      
+      // Hide all stat tabs and tables
+      document.querySelectorAll('.stat-tabs').forEach(tab => tab.style.display = 'none');
+      document.querySelectorAll('.table-container').forEach(table => table.style.display = 'none');
+      
+      // Show selected category's stat tabs and default table
+      document.getElementById(`${category}-tabs`).style.display = 'flex';
+      document.getElementById(`${category}-${currentStat[category]}`).style.display = 'block';
+      
+      // Reset stat tabs to default (first one)
+      document.querySelectorAll(`#${category}-tabs .stat-tab`).forEach(tab => tab.classList.remove('active'));
+      document.querySelector(`#${category}-tabs .stat-tab:first-child`).classList.add('active');
+      
+      currentCategory = category;
+    }
+
+    function switchStat(category, stat) {
+      // Only update if we're in the correct category
+      if (category !== currentCategory) return;
+      
+      // Update stat tabs
+      document.querySelectorAll(`#${category}-tabs .stat-tab`).forEach(tab => tab.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      // Hide all tables for this category
+      document.querySelectorAll(`.table-container[id^="${category}-"]`).forEach(table => table.style.display = 'none');
+      
+      // Show selected table
+      document.getElementById(`${category}-${stat}`).style.display = 'block';
+      
+      currentStat[category] = stat;
     }
   </script>
 </body>
