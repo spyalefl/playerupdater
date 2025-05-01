@@ -286,9 +286,7 @@
                 
                 if (current !== updated) {
                     bbcode += `${attr}: [color=green][b]${current} → ${updated}[/b][/color]\n`;
-                } else {
-                    bbcode += `${attr}: ${current}\n`;
-                }
+                } 
             });
 
             document.getElementById('bbcode-output').textContent = bbcode;
