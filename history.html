@@ -74,6 +74,7 @@
   <div class="category-tabs">
     <div class="category-tab active" onclick="switchCategory('passing')">Passing</div>
     <div class="category-tab" onclick="switchCategory('rushing')">Rushing</div>
+    <div class="category-tab" onclick="switchCategory('receiving')">Receiving</div>
   </div>
 
   <!-- Passing Tabs -->
@@ -92,6 +93,13 @@
     <div class="stat-tab" onclick="switchTab('rush-td')">Touchdowns</div>
   </div>
 
+  <!-- Receiving Tabs -->
+  <div id="receiving-tabs" class="stat-tabs" style="display:none">
+    <div class="stat-tab active" onclick="switchTab('rec-catches')">Catches</div>
+    <div class="stat-tab" onclick="switchTab('rec-yards')">Yards</div>
+    <div class="stat-tab" onclick="switchTab('rec-td')">Touchdowns</div>
+  </div>
+
   <!-- Passing Tables -->
   <div id="pass-att" class="table-container active-container">
     <table>
@@ -99,7 +107,7 @@
       <tr><td><span class="rank-icon">🏆</span></td><td>Cloud, J.</td><td>1109</td></tr>
       <tr><td><span class="rank-icon">🥈</span></td><td>Murray, S.</td><td>1107</td></tr>
       <tr><td><span class="rank-icon">🥉</span></td><td>Gravy, T.</td><td>1029</td></tr>
-      <tr><td>4</td><td>Krieger, D. </td><td>999</td></tr>
+      <tr><td>4</td><td>Krieger (D. + A.)</td><td>999</td></tr>
       <tr><td>5</td><td>Demarco, W.</td><td>686</td></tr>
     </table>
   </div>
@@ -110,7 +118,7 @@
       <tr><td><span class="rank-icon">🏆</span></td><td>Cloud, J.</td><td>696</td></tr>
       <tr><td><span class="rank-icon">🥈</span></td><td>Murray, S.</td><td>668</td></tr>
       <tr><td><span class="rank-icon">🥉</span></td><td>Gravy, T.</td><td>619</td></tr>
-      <tr><td>4</td><td>Krieger, D.</td><td>616</td></tr>
+      <tr><td>4</td><td>Krieger (D. + A.)</td><td>616</td></tr>
       <tr><td>5</td><td>Demarco, W.</td><td>443</td></tr>
     </table>
   </div>
@@ -121,7 +129,7 @@
       <tr><td><span class="rank-icon">🏆</span></td><td>Cloud, J.</td><td>7717</td></tr>
       <tr><td><span class="rank-icon">🥈</span></td><td>Murray, S.</td><td>7561</td></tr>
       <tr><td><span class="rank-icon">🥉</span></td><td>Gravy, T.</td><td>6871</td></tr>
-      <tr><td>4</td><td>Krieger, D.</td><td>6815</td></tr>
+      <tr><td>4</td><td>Krieger (D. + A.)</td><td>6815</td></tr>
       <tr><td>5</td><td>Forscythe, D.</td><td>6301</td></tr>
     </table>
   </div>
@@ -132,7 +140,7 @@
       <tr><td><span class="rank-icon">🏆</span></td><td>Murray, S.</td><td>62</td></tr>
       <tr><td><span class="rank-icon">🥈</span></td><td>Gravy, T.</td><td>49</td></tr>
       <tr><td><span class="rank-icon">🥉</span></td><td>Cloud, J.</td><td>48</td></tr>
-      <tr><td>4</td><td>Krieger, D.</td><td>44</td></tr>
+      <tr><td>4</td><td>Krieger (D. + A.)</td><td>44</td></tr>
       <tr><td>5</td><td>Demarco, W.</td><td>28</td></tr>
     </table>
   </div>
@@ -144,7 +152,7 @@
       <tr><td><span class="rank-icon">🥈</span></td><td>Murray, S.</td><td>29</td></tr>
       <tr><td><span class="rank-icon">🥉</span></td><td>Cloud, J.</td><td>27</td></tr>
       <tr><td>4</td><td>Gravy, T.</td><td>26</td></tr>
-      <tr><td>5</td><td>Krieger, D. </td><td>26</td></tr>
+      <tr><td>5</td><td>Krieger (D. + A.)</td><td>26</td></tr>
     </table>
   </div>
 
@@ -182,32 +190,68 @@
     </table>
   </div>
 
+  <!-- Receiving Tables -->
+  <div id="rec-catches" class="table-container">
+    <table>
+      <tr><th>Rank</th><th>Player</th><th>Catches</th></tr>
+      <tr><td><span class="rank-icon">🏆</span></td><td>Steele/Sleele, J.</td><td>175</td></tr>
+      <tr><td><span class="rank-icon">🥈</span></td><td>Dropski, N.</td><td>145</td></tr>
+      <tr><td><span class="rank-icon">🥉</span></td><td>Olaf, C.</td><td>122</td></tr>
+      <tr><td>4</td><td>Parker, S.</td><td>140</td></tr>
+      <tr><td>5</td><td>Eliason, V.</td><td>131</td></tr>
+    </table>
+  </div>
+
+  <div id="rec-yards" class="table-container">
+    <table>
+      <tr><th>Rank</th><th>Player</th><th>Yards</th></tr>
+      <tr><td><span class="rank-icon">🏆</span></td><td>Steele/Sleele, J.</td><td>2376</td></tr>
+      <tr><td><span class="rank-icon">🥈</span></td><td>Olaf, C.</td><td>1743</td></tr>
+      <tr><td><span class="rank-icon">🥉</span></td><td>Dropski, N.</td><td>2198</td></tr>
+      <tr><td>4</td><td>Parker, S.</td><td>1990</td></tr>
+      <tr><td>5</td><td>Pierce, C.</td><td>1665</td></tr>
+    </table>
+  </div>
+
+  <div id="rec-td" class="table-container">
+    <table>
+      <tr><th>Rank</th><th>Player</th><th>TDs</th></tr>
+      <tr><td><span class="rank-icon">🏆</span></td><td>Steele/Sleele, J.</td><td>19</td></tr>
+      <tr><td><span class="rank-icon">🥈</span></td><td>Merriem, A.</td><td>17</td></tr>
+      <tr><td><span class="rank-icon">🥉</span></td><td>Carpenter, C.</td><td>14</td></tr>
+      <tr><td>4</td><td>Eliason, V.</td><td>16</td></tr>
+      <tr><td>5</td><td>Crash Out, G.</td><td>15</td></tr>
+    </table>
+  </div>
+
   <script>
     function switchCategory(category) {
-      // Hide all table containers
+      // Hide all table containers and stat tabs
       document.querySelectorAll('.table-container').forEach(t => t.style.display = 'none');
+      document.querySelectorAll('.stat-tabs').forEach(t => t.style.display = 'none');
       
       // Update category tabs
       document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
       event.target.classList.add('active');
       
-      // Show/hide stat tabs
+      // Show appropriate stat tabs and first table
       if (category === 'passing') {
         document.getElementById('passing-tabs').style.display = 'flex';
-        document.getElementById('rushing-tabs').style.display = 'none';
-        
-        // Show first passing tab
         document.getElementById('pass-att').style.display = 'block';
         document.querySelectorAll('#passing-tabs .stat-tab').forEach(tab => tab.classList.remove('active'));
         document.querySelector('#passing-tabs .stat-tab').classList.add('active');
-      } else {
-        document.getElementById('passing-tabs').style.display = 'none';
+      } 
+      else if (category === 'rushing') {
         document.getElementById('rushing-tabs').style.display = 'flex';
-        
-        // Show first rushing tab
         document.getElementById('rush-att').style.display = 'block';
         document.querySelectorAll('#rushing-tabs .stat-tab').forEach(tab => tab.classList.remove('active'));
         document.querySelector('#rushing-tabs .stat-tab').classList.add('active');
+      }
+      else if (category === 'receiving') {
+        document.getElementById('receiving-tabs').style.display = 'flex';
+        document.getElementById('rec-catches').style.display = 'block';
+        document.querySelectorAll('#receiving-tabs .stat-tab').forEach(tab => tab.classList.remove('active'));
+        document.querySelector('#receiving-tabs .stat-tab').classList.add('active');
       }
     }
 
