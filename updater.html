@@ -105,13 +105,19 @@
             color: #2c3e50;
         }
 
+        .tpe-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
         .total-tpe {
             text-align: center;
-            font-size: 1.2em;
+            font-size: 1em;
             font-weight: bold;
-            padding: 15px;
+            padding: 10px;
             border-radius: 5px;
-            margin-bottom: 20px;
         }
 
         .valid-tpe {
@@ -171,7 +177,11 @@
 
         <div class="attribute-grid" id="attributesGrid"></div>
 
-        <div id="totalTPE" class="total-tpe valid-tpe">Total TPE Used: 0</div>
+        <div class="tpe-summary">
+            <div id="totalEarned" class="total-tpe valid-tpe">TPE Earned: 0</div>
+            <div id="totalSpent" class="total-tpe valid-tpe">TPE Spent: 0</div>
+            <div id="totalBank" class="total-tpe valid-tpe">Banked TPE: 0</div>
+        </div>
 
         <button id="generateButton" style="width: 100%; padding: 15px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">
             Generate Update Code
@@ -241,28 +251,36 @@
 
         // Update totals and validation
         function updateTotals() {
-            let total = 0;
+            let earnedTPE = 0;
+            let spentTPE = 0;
             
-            // Calculate attribute TPE
+            // Calculate earned TPE from tasks
+            document.querySelectorAll('.task-tpe').forEach(input => {
+                earnedTPE += parseInt(input.value) || 0;
+            });
+
+            // Calculate spent TPE from attributes
             document.querySelectorAll('.attribute-row').forEach(row => {
                 const current = parseInt(row.querySelector('.current-value').value) || 35;
                 const updated = parseInt(row.querySelector('.updated-value').value) || 35;
                 const tpeCost = calculateTPE(current, updated);
                 row.querySelector('.tpe-cost').textContent = tpeCost;
-                total += tpeCost;
+                spentTPE += tpeCost;
             });
 
-            // Calculate task TPE
-            document.querySelectorAll('.task-tpe').forEach(input => {
-                total += parseInt(input.value) || 0;
-            });
+            const bankTPE = earnedTPE - spentTPE;
 
-            const tpeDisplay = document.getElementById('totalTPE');
-            tpeDisplay.textContent = `Total TPE Used: ${total}`;
+            // Update displays
+            document.getElementById('totalEarned').textContent = `TPE Earned: ${earnedTPE}`;
+            document.getElementById('totalSpent').textContent = `TPE Spent: ${spentTPE}`;
+            document.getElementById('totalBank').textContent = `Banked TPE: ${bankTPE}`;
+            document.getElementById('totalBank').className = 'total-tpe ' + (bankTPE >= 0 ? 'valid-tpe' : 'invalid-tpe');
         }
 
         // Generate BBCode
         document.getElementById('generateButton').addEventListener('click', function() {
+            updateTotals(); // Ensure fresh calculations
+            
             let bbcode = "[b]Tasks Completed:[/b]\n";
             
             // Add tasks
@@ -288,6 +306,15 @@
                     bbcode += `${attr}: [color=green][b]${current} → ${updated}[/b][/color]\n`;
                 } 
             });
+
+            // Add TPE summary
+            const earned = parseInt(document.getElementById('totalEarned').textContent.split(': ')[1]);
+            const spent = parseInt(document.getElementById('totalSpent').textContent.split(': ')[1]);
+            const bank = earned - spent;
+            
+            bbcode += `\n[b]TPE Earned:[/b] ${earned}\n`;
+            bbcode += `[b]TPE Spent:[/b] ${spent}\n`;
+            bbcode += `[b]Banked TPE:[/b] ${earned} - ${spent} = ${bank}\n`;
 
             document.getElementById('bbcode-output').textContent = bbcode;
             document.getElementById('outputModal').style.display = 'block';
