@@ -37,6 +37,18 @@
             background-color: #2980b9;
         }
 
+        .bank-input {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .bank-input label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
         .task-section {
             margin-bottom: 20px;
         }
@@ -163,6 +175,11 @@
         <a href="index.html" class="back-button">← Back to Hub</a>
         <h1>EFL Player Updater</h1>
 
+        <div class="bank-input">
+            <label>Current Banked TPE:</label>
+            <input type="number" id="initialBank" min="0" value="0" placeholder="Enter current bank">
+        </div>
+
         <div class="task-section">
             <h3>Completed Tasks</h3>
             <div id="tasksContainer">
@@ -180,7 +197,7 @@
         <div class="tpe-summary">
             <div id="totalEarned" class="total-tpe valid-tpe">TPE Earned: 0</div>
             <div id="totalSpent" class="total-tpe valid-tpe">TPE Spent: 0</div>
-            <div id="totalBank" class="total-tpe valid-tpe">Banked TPE: 0</div>
+            <div id="totalBank" class="total-tpe valid-tpe">New Bank: 0</div>
         </div>
 
         <button id="generateButton" style="width: 100%; padding: 15px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">
@@ -260,6 +277,7 @@
 
         // Update totals and validation
         function updateTotals() {
+            const initialBank = parseInt(document.getElementById('initialBank').value) || 0;
             let earnedTPE = 0;
             let spentTPE = 0;
             
@@ -277,13 +295,14 @@
                 spentTPE += tpeCost;
             });
 
-            const bankTPE = earnedTPE - spentTPE;
+            const totalAvailable = initialBank + earnedTPE;
+            const newBank = totalAvailable - spentTPE;
 
             // Update displays
             document.getElementById('totalEarned').textContent = `TPE Earned: ${earnedTPE}`;
             document.getElementById('totalSpent').textContent = `TPE Spent: ${spentTPE}`;
-            document.getElementById('totalBank').textContent = `Banked TPE: ${bankTPE}`;
-            document.getElementById('totalBank').className = 'total-tpe ' + (bankTPE >= 0 ? 'valid-tpe' : 'invalid-tpe');
+            document.getElementById('totalBank').textContent = `New Bank: ${newBank}`;
+            document.getElementById('totalBank').className = 'total-tpe ' + (newBank >= 0 ? 'valid-tpe' : 'invalid-tpe');
         }
 
         // Generate BBCode
@@ -317,13 +336,15 @@
             });
 
             // Add TPE summary
+            const initialBank = parseInt(document.getElementById('initialBank').value) || 0;
             const earned = parseInt(document.getElementById('totalEarned').textContent.split(': ')[1]);
             const spent = parseInt(document.getElementById('totalSpent').textContent.split(': ')[1]);
-            const bank = earned - spent;
+            const newBank = initialBank + earned - spent;
             
-            bbcode += `\n[b]TPE Earned:[/b] ${earned}\n`;
+            bbcode += `\n[b]Initial Bank:[/b] ${initialBank}\n`;
+            bbcode += `[b]TPE Earned:[/b] ${earned}\n`;
             bbcode += `[b]TPE Spent:[/b] ${spent}\n`;
-            bbcode += `[b]Banked TPE:[/b] ${earned} - ${spent} = ${bank}\n`;
+            bbcode += `[b]New Bank:[/b] ${initialBank} + ${earned} - ${spent} = ${newBank}\n`;
 
             document.getElementById('bbcode-output').textContent = bbcode;
             document.getElementById('outputModal').style.display = 'block';
