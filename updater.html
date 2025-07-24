@@ -49,6 +49,32 @@
             margin-right: 10px;
         }
 
+        .paste-section {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .paste-section textarea {
+            width: calc(100% - 20px);
+            min-height: 120px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            resize: vertical;
+        }
+
+        .paste-section button {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
         .task-section {
             margin-bottom: 20px;
         }
@@ -119,7 +145,7 @@
 
         .tpe-summary {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 10px;
             margin-bottom: 20px;
         }
@@ -175,6 +201,12 @@
         <a href="index.html" class="back-button">← Back to Hub</a>
         <h1>EFL Player Updater</h1>
 
+        <div class="paste-section">
+            <h3>Paste Player's Current Stats</h3>
+            <textarea id="playerStatsInput" placeholder="Paste player's current attributes and banked TPE here (e.g., Speed: 90, Banked TPE: 0)"></textarea>
+            <button id="loadStatsButton">Load Stats</button>
+        </div>
+
         <div class="bank-input">
             <label>Current Banked TPE:</label>
             <input type="number" id="initialBank" min="0" value="0" placeholder="Enter current bank">
@@ -197,6 +229,7 @@
         <div class="tpe-summary">
             <div id="totalEarned" class="total-tpe valid-tpe">TPE Earned: 0</div>
             <div id="totalSpent" class="total-tpe valid-tpe">TPE Spent: 0</div>
+            <div id="totalCurrentTPE" class="total-tpe valid-tpe">Current Player TPE: 0</div>
             <div id="totalBank" class="total-tpe valid-tpe">New Bank: 0</div>
         </div>
 
@@ -222,15 +255,24 @@
             'Agility',
             'Arm',
             'Intelligence',
-            'Accuracy',
-            'Tackle',
+            'Accuracy', // This will map to 'Throw Accuracy'
+            'Tackle', // This will map to 'Tackling'
             'Speed',
             'Hands',
-            'Pass Block',
-            'Run Block',
-            'Kick Distance',
+            'Pass Block', // This will map to 'Pass Blocking'
+            'Run Block', // This will map to 'Run Blocking'
+            'Kick Distance', // This will map to 'Kick Power'
             'Kick Accuracy'
         ];
+
+        // Mapping for attribute names that differ between input and display
+        const attributeMap = {
+            'Throw Accuracy': 'Accuracy',
+            'Tackling': 'Tackle',
+            'Pass Blocking': 'Pass Block',
+            'Run Blocking': 'Run Block',
+            'Kick Power': 'Kick Distance'
+        };
 
         // Initialize attribute grid
         const grid = document.getElementById('attributesGrid');
@@ -257,20 +299,30 @@
                 <input type="number" placeholder="TPE" class="task-tpe" min="0">
             `;
             container.appendChild(newRow);
+            newRow.querySelectorAll('input').forEach(input => input.addEventListener('input', updateTotals));
         }
 
-        // TPE calculation
+        // TPE calculation for attribute increases based on the provided scale
         function calculateTPE(currentValue, updatedValue) {
             let tpe = 0;
-            for (let i = currentValue; i < updatedValue; i++) {
-                if (i < 50) tpe += 1;
-                else if (i < 60) tpe += 2;
-                else if (i < 70) tpe += 3;
-                else if (i < 80) tpe += 6;
-                else if (i < 85) tpe += 8;
-                else if (i < 90) tpe += 12;
-                else if (i < 95) tpe += 18;
-                else tpe += 24;
+            for (let i = currentValue; i < updatedValue; i++) { // i is the *starting* point of the increment
+                if (i >= 35 && i <= 49) { // 35-50 costs 1 TPE (e.g., 49->50 costs 1)
+                    tpe += 1;
+                } else if (i >= 50 && i <= 59) { // 50-60 costs 2 TPE (e.g., 50->51 costs 2, 59->60 costs 2)
+                    tpe += 2;
+                } else if (i >= 60 && i <= 69) { // 60-70 costs 3 TPE (e.g., 60->61 costs 3, 69->70 costs 3)
+                    tpe += 3;
+                } else if (i >= 70 && i <= 79) { // 70-80 costs 6 TPE
+                    tpe += 6;
+                } else if (i >= 80 && i <= 84) { // 80-85 costs 8 TPE
+                    tpe += 8;
+                } else if (i >= 85 && i <= 89) { // 85-90 costs 12 TPE
+                    tpe += 12;
+                } else if (i >= 90 && i <= 94) { // 90-95 costs 18 TPE
+                    tpe += 18;
+                } else if (i >= 95 && i <= 99) { // 95-99 costs 24 TPE (up to 99, as max is 99)
+                    tpe += 24;
+                }
             }
             return tpe;
         }
@@ -280,19 +332,28 @@
             const initialBank = parseInt(document.getElementById('initialBank').value) || 0;
             let earnedTPE = 0;
             let spentTPE = 0;
+            let totalCurrentTPE = 0; // Re-initialize for calculation based on attributes
             
             // Calculate earned TPE from tasks
             document.querySelectorAll('.task-tpe').forEach(input => {
                 earnedTPE += parseInt(input.value) || 0;
             });
 
-            // Calculate spent TPE from attributes
+            // Calculate spent TPE from attributes and total current TPE
             document.querySelectorAll('.attribute-row').forEach(row => {
                 const current = parseInt(row.querySelector('.current-value').value) || 35;
                 const updated = parseInt(row.querySelector('.updated-value').value) || 35;
-                const tpeCost = calculateTPE(current, updated);
-                row.querySelector('.tpe-cost').textContent = tpeCost;
-                spentTPE += tpeCost;
+                
+                // TPE cost for the current update (from current to updated)
+                const tpeCostForUpdate = calculateTPE(current, updated);
+                row.querySelector('.tpe-cost').textContent = tpeCostForUpdate;
+                spentTPE += tpeCostForUpdate;
+
+                // Total TPE invested to reach the current attribute value from base 35
+                // Only count TPE if the attribute is above 35
+                if (current > 35) {
+                    totalCurrentTPE += calculateTPE(35, current); 
+                }
             });
 
             const totalAvailable = initialBank + earnedTPE;
@@ -301,9 +362,63 @@
             // Update displays
             document.getElementById('totalEarned').textContent = `TPE Earned: ${earnedTPE}`;
             document.getElementById('totalSpent').textContent = `TPE Spent: ${spentTPE}`;
+            document.getElementById('totalCurrentTPE').textContent = `Current Player TPE: ${totalCurrentTPE}`; // Display calculated value
             document.getElementById('totalBank').textContent = `New Bank: ${newBank}`;
             document.getElementById('totalBank').className = 'total-tpe ' + (newBank >= 0 ? 'valid-tpe' : 'invalid-tpe');
         }
+
+        // Load stats from pasted text
+        document.getElementById('loadStatsButton').addEventListener('click', function() {
+            const playerStatsText = document.getElementById('playerStatsInput').value;
+            const lines = playerStatsText.split('\n');
+            const attributeValues = {};
+
+            lines.forEach(line => {
+                let match;
+                // Regex to handle "AttributeName (Abbreviation): Value" or "AttributeName: Value"
+                // The attribute name part is made non-greedy to correctly capture names before optional parentheses.
+                match = line.match(/^([a-zA-Z\s]+?)(?:\s*\(.+\))?:\s*(\d+)/);
+                if (match) {
+                    let attrName = match[1].trim(); 
+                    const value = parseInt(match[2]);
+
+                    // Map attribute names if necessary
+                    for (const key in attributeMap) {
+                        if (attrName === key) {
+                            attrName = attributeMap[key];
+                            break;
+                        }
+                    }
+                    attributeValues[attrName] = value;
+                }
+
+                // Match for "Banked TPE: 0"
+                match = line.match(/Banked TPE:\s*(\d+)/);
+                if (match) {
+                    document.getElementById('initialBank').value = parseInt(match[1]);
+                }
+            });
+
+            // Update the 'current-value' inputs
+            document.querySelectorAll('.attribute-row').forEach(row => {
+                const attrNameElement = row.querySelector('.attribute-name');
+                const attrName = attrNameElement.textContent; 
+                const currentValueInput = row.querySelector('.current-value');
+                const updatedValueInput = row.querySelector('.updated-value');
+
+                if (attributeValues[attrName] !== undefined) {
+                    currentValueInput.value = attributeValues[attrName];
+                    // Also update the updated-value to match the current value initially
+                    updatedValueInput.value = attributeValues[attrName];
+                } else {
+                    // If an attribute is not found in the pasted text, ensure its current and updated values are reset to 35
+                    currentValueInput.value = 35;
+                    updatedValueInput.value = 35;
+                }
+            });
+
+            updateTotals(); // Recalculate all TPE summaries after loading stats
+        });
 
         // Generate BBCode
         document.getElementById('generateButton').addEventListener('click', function() {
@@ -332,18 +447,21 @@
                 
                 if (current !== updated) {
                     bbcode += `${attr}: [color=green][b]${current} → ${updated}[/b][/color]\n`;
-                } 
+                }
             });
 
             // Add TPE summary
             const initialBank = parseInt(document.getElementById('initialBank').value) || 0;
             const earned = parseInt(document.getElementById('totalEarned').textContent.split(': ')[1]);
             const spent = parseInt(document.getElementById('totalSpent').textContent.split(': ')[1]);
+            // Read Total Current TPE directly from the display element (which is now calculated)
+            const totalCurrent = parseInt(document.getElementById('totalCurrentTPE').textContent.split(': ')[1]); 
             const newBank = initialBank + earned - spent;
             
             bbcode += `\n[b]Initial Bank:[/b] ${initialBank}\n`;
             bbcode += `[b]TPE Earned:[/b] ${earned}\n`;
             bbcode += `[b]TPE Spent:[/b] ${spent}\n`;
+            bbcode += `[b]Total Player TPE:[/b] ${totalCurrent}\n`; // Add Total Current TPE to BBCode
             bbcode += `[b]New Bank:[/b] ${initialBank} + ${earned} - ${spent} = ${newBank}\n`;
 
             document.getElementById('bbcode-output').textContent = bbcode;
@@ -354,9 +472,19 @@
         document.querySelectorAll('.current-value').forEach(input => {
             input.addEventListener('input', function() {
                 const updated = this.closest('.attribute-row').querySelector('.updated-value');
-                updated.value = Math.max(updated.value, this.value);
+                // Ensure updated value is not less than current value
+                if (parseInt(updated.value) < parseInt(this.value)) {
+                    updated.value = this.value;
+                }
                 updateTotals();
             });
+        });
+
+        // Add event listeners to new task inputs
+        document.getElementById('tasksContainer').addEventListener('input', function(event) {
+            if (event.target.classList.contains('task-tpe')) {
+                updateTotals();
+            }
         });
 
         document.querySelectorAll('input').forEach(input => {
