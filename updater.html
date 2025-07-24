@@ -332,14 +332,15 @@
             const initialBank = parseInt(document.getElementById('initialBank').value) || 0;
             let earnedTPE = 0;
             let spentTPE = 0;
-            let totalCurrentTPE = 0; // Re-initialize for calculation based on attributes
+            let totalCurrentTPE = 0; // This will now be the *new* total TPE after upgrades
             
             // Calculate earned TPE from tasks
             document.querySelectorAll('.task-tpe').forEach(input => {
                 earnedTPE += parseInt(input.value) || 0;
             });
 
-            // Calculate spent TPE from attributes and total current TPE
+            // Calculate spent TPE from attributes (current to updated)
+            // And calculate totalCurrentTPE (base 35 to updated)
             document.querySelectorAll('.attribute-row').forEach(row => {
                 const current = parseInt(row.querySelector('.current-value').value) || 35;
                 const updated = parseInt(row.querySelector('.updated-value').value) || 35;
@@ -349,10 +350,9 @@
                 row.querySelector('.tpe-cost').textContent = tpeCostForUpdate;
                 spentTPE += tpeCostForUpdate;
 
-                // Total TPE invested to reach the current attribute value from base 35
-                // Only count TPE if the attribute is above 35
-                if (current > 35) {
-                    totalCurrentTPE += calculateTPE(35, current); 
+                // Total TPE invested to reach the *updated* attribute value from base 35
+                if (updated > 35) { // Only count TPE if the attribute is above 35
+                    totalCurrentTPE += calculateTPE(35, updated); 
                 }
             });
 
@@ -362,7 +362,7 @@
             // Update displays
             document.getElementById('totalEarned').textContent = `TPE Earned: ${earnedTPE}`;
             document.getElementById('totalSpent').textContent = `TPE Spent: ${spentTPE}`;
-            document.getElementById('totalCurrentTPE').textContent = `Current Player TPE: ${totalCurrentTPE}`; // Display calculated value
+            document.getElementById('totalCurrentTPE').textContent = `Current Player TPE: ${totalCurrentTPE}`; // Display calculated value based on updated attributes
             document.getElementById('totalBank').textContent = `New Bank: ${newBank}`;
             document.getElementById('totalBank').className = 'total-tpe ' + (newBank >= 0 ? 'valid-tpe' : 'invalid-tpe');
         }
@@ -442,11 +442,12 @@
             // Add attributes
             document.querySelectorAll('.attribute-row').forEach(row => {
                 const attr = row.querySelector('.attribute-name').textContent;
-                const current = row.querySelector('.current-value').value;
-                const updated = row.querySelector('.updated-value').value;
-                
+                const current = parseInt(row.querySelector('.current-value').value); // Parse to int for calculation
+                const updated = parseInt(row.querySelector('.updated-value').value); // Parse to int for calculation
+                const tpeCostForThisAttribute = calculateTPE(current, updated); // Calculate individual TPE cost
+
                 if (current !== updated) {
-                    bbcode += `${attr}: [color=green][b]${current} → ${updated}[/b][/color]\n`;
+                    bbcode += `${attr}: [color=green][b]${current} → ${updated}[/b][/color] (+${tpeCostForThisAttribute} TPE)\n`;
                 }
             });
 
