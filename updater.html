@@ -37,6 +37,27 @@
             background-color: #2980b9;
         }
 
+        .player-selection-section {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .player-selection-section label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .player-selection-section select,
+        .player-selection-section input[type="text"] { /* Style for search input */
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: calc(100% - 20px);
+            margin-bottom: 10px;
+        }
+
         .bank-input {
             margin-bottom: 20px;
             padding: 10px;
@@ -83,9 +104,18 @@
             display: flex;
             gap: 10px;
             margin-bottom: 10px;
+            align-items: center; /* Align items vertically */
         }
 
-        .task-row input {
+        .task-row select.task-name-select { /* Specific style for new select */
+            flex: 2; /* Give it more space */
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .task-row input.task-link,
+        .task-row input.task-tpe {
             flex: 1;
             padding: 8px;
             border: 1px solid #ddd;
@@ -145,7 +175,7 @@
 
         .tpe-summary {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(2, 1fr); /* Adjusted for 4 lines of text */
             gap: 10px;
             margin-bottom: 20px;
         }
@@ -194,6 +224,61 @@
             border-radius: 5px;
             font-family: monospace;
         }
+
+        /* Custom Modal for Errors */
+        .error-modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .error-modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .error-modal-content h2 {
+            color: #c62828;
+            margin-top: 0;
+        }
+
+        .error-modal-content p {
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .error-modal-content button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .error-modal-content button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Styles for disabled button */
+        button:disabled {
+            background-color: #cccccc !important;
+            cursor: not-allowed !important;
+        }
     </style>
 </head>
 <body>
@@ -201,8 +286,18 @@
         <a href="index.html" class="back-button">← Back to Hub</a>
         <h1>EFL Player Updater</h1>
 
+        <div class="player-selection-section">
+            <h3>Load Player from Sheet</h3>
+            <label for="playerSearch">Search Player:</label>
+            <input type="text" id="playerSearch" placeholder="Type to search players...">
+            <label for="playerSelect">Select Player:</label>
+            <select id="playerSelect">
+                <option value="">Loading players...</option>
+            </select>
+        </div>
+
         <div class="paste-section">
-            <h3>Paste Player's Current Stats</h3>
+            <h3>Paste Player's Current Stats (Alternative)</h3>
             <textarea id="playerStatsInput" placeholder="Paste player's current attributes and banked TPE here (e.g., Speed: 90, Banked TPE: 0)"></textarea>
             <button id="loadStatsButton">Load Stats</button>
         </div>
@@ -215,11 +310,7 @@
         <div class="task-section">
             <h3>Completed Tasks</h3>
             <div id="tasksContainer">
-                <div class="task-row">
-                    <input type="text" placeholder="Task Name" class="task-name">
-                    <input type="url" placeholder="Task Link" class="task-link">
-                    <input type="number" placeholder="TPE" class="task-tpe" min="0">
-                </div>
+                <!-- Task rows will be added here -->
             </div>
             <button class="add-task" onclick="addTask()">+ Add Task</button>
         </div>
@@ -229,6 +320,7 @@
         <div class="tpe-summary">
             <div id="totalEarned" class="total-tpe valid-tpe">TPE Earned: 0</div>
             <div id="totalSpent" class="total-tpe valid-tpe">TPE Spent: 0</div>
+            <div id="totalCappedWeeklyTPE" class="total-tpe valid-tpe">Weekly Capped TPE: 0 / 12</div>
             <div id="totalCurrentTPE" class="total-tpe valid-tpe">Current Player TPE: 0</div>
             <div id="totalBank" class="total-tpe valid-tpe">New Bank: 0</div>
         </div>
@@ -245,6 +337,15 @@
                         style="margin-top: 15px; padding: 10px 20px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">
                     Close
                 </button>
+            </div>
+        </div>
+
+        <!-- Custom Error Modal -->
+        <div id="errorModal" class="error-modal">
+            <div class="error-modal-content">
+                <h2>Error Loading Data</h2>
+                <p id="errorMessage"></p>
+                <button onclick="document.getElementById('errorModal').style.display = 'none'">Close</button>
             </div>
         </div>
     </div>
@@ -265,14 +366,40 @@
             'Kick Accuracy'
         ];
 
-        // Mapping for attribute names that differ between input and display
+        // Mapping for attribute names that differ between internal display and Google Sheet headers
         const attributeMap = {
-            'Throw Accuracy': 'Accuracy',
+            'Throw Accuracy': 'Accuracy', // Sheet header 'Throw Accuracy' maps to internal 'Accuracy'
             'Tackling': 'Tackle',
             'Pass Blocking': 'Pass Block',
             'Run Blocking': 'Run Block',
             'Kick Power': 'Kick Distance'
         };
+
+        // Reverse map for sheet headers to internal display names
+        const reverseAttributeMap = Object.entries(attributeMap).reduce((acc, [sheetKey, displayValue]) => {
+            acc[displayValue] = sheetKey;
+            return acc;
+        }, {});
+
+        // Task Data Definitions
+        const taskData = [
+            { name: "Article", tpe: 6, capped: true, affectsWeeklyCap: false },
+            { name: "Podcasts", tpe: 6, capped: true, affectsWeeklyCap: false },
+            { name: "Graphic", tpe: 6, capped: true, affectsWeeklyCap: false },
+            { name: "Question of the Week", tpe: 3, capped: true, affectsWeeklyCap: false },
+            { name: "Activity Check", tpe: 3, capped: true, affectsWeeklyCap: false },
+            { name: "Welfare", tpe: 3, capped: true, affectsWeeklyCap: true }, // Special case for weekly cap
+            { name: "Predictions", tpe: null, capped: false, affectsWeeklyCap: false }, // null for varied
+            { name: "Collegiate Report", tpe: 8, capped: false, affectsWeeklyCap: false },
+            { name: "Mid-Career Analysis", tpe: 10, capped: false, affectsWeeklyCap: false },
+            { name: "Biography", tpe: 10, capped: false, affectsWeeklyCap: false },
+            { name: "Training Camp", tpe: null, capped: false, affectsWeeklyCap: false } // null for varied
+        ];
+
+        // Global variable to store player data fetched from the sheet
+        let allPlayersData = [];
+        // Global variable to store the player's TPE value when loaded from sheet/paste
+        let initialPlayerTPEFromLoad = 0; 
 
         // Initialize attribute grid
         const grid = document.getElementById('attributesGrid');
@@ -294,12 +421,44 @@
             const newRow = document.createElement('div');
             newRow.className = 'task-row';
             newRow.innerHTML = `
-                <input type="text" placeholder="Task Name" class="task-name">
+                <select class="task-name-select">
+                    <option value="">-- Select Task --</option>
+                    ${taskData.map(task => `<option value="${task.name}">${task.name}</option>`).join('')}
+                </select>
                 <input type="url" placeholder="Task Link" class="task-link">
                 <input type="number" placeholder="TPE" class="task-tpe" min="0">
             `;
             container.appendChild(newRow);
-            newRow.querySelectorAll('input').forEach(input => input.addEventListener('input', updateTotals));
+
+            const taskSelect = newRow.querySelector('.task-name-select');
+            const tpeInput = newRow.querySelector('.task-tpe');
+
+            taskSelect.addEventListener('change', function() {
+                const selectedTaskName = this.value;
+                const selectedTask = taskData.find(task => task.name === selectedTaskName);
+
+                if (selectedTask) {
+                    if (selectedTask.tpe !== null) {
+                        tpeInput.value = selectedTask.tpe;
+                        tpeInput.readOnly = true; // Make read-only for fixed TPE tasks
+                    } else {
+                        tpeInput.value = ''; // Clear for varied TPE tasks
+                        tpeInput.readOnly = false; // Make editable for varied TPE tasks
+                    }
+                    // Store capped status on the TPE input for easier calculation later
+                    tpeInput.dataset.capped = selectedTask.capped;
+                    tpeInput.dataset.affectsWeeklyCap = selectedTask.affectsWeeklyCap;
+                } else {
+                    tpeInput.value = '';
+                    tpeInput.readOnly = false;
+                    tpeInput.dataset.capped = false;
+                    tpeInput.dataset.affectsWeeklyCap = false;
+                }
+                updateTotals();
+            });
+
+            // Listen for manual TPE input changes as well
+            tpeInput.addEventListener('input', updateTotals);
         }
 
         // TPE calculation for attribute increases based on the provided scale
@@ -332,15 +491,32 @@
             const initialBank = parseInt(document.getElementById('initialBank').value) || 0;
             let earnedTPE = 0;
             let spentTPE = 0;
-            let totalCurrentTPE = 0; // This will now be the *new* total TPE after upgrades
+            let tpeInvestedInUpdatedAttributes = 0; // TPE from player's build after upgrades
+            let cappedWeeklyTPEEarned = 0;
+            let hasWelfareTask = false;
             
-            // Calculate earned TPE from tasks
-            document.querySelectorAll('.task-tpe').forEach(input => {
-                earnedTPE += parseInt(input.value) || 0;
+            // Calculate earned TPE from tasks and check for Welfare
+            document.querySelectorAll('.task-row').forEach(row => {
+                const tpeInput = row.querySelector('.task-tpe');
+                const taskTPE = parseInt(tpeInput.value) || 0;
+                earnedTPE += taskTPE;
+
+                // Check if the task is capped and contributes to weekly cap
+                // Ensure dataset.capped is checked as a string 'true'
+                if (tpeInput.dataset.capped === 'true') {
+                    cappedWeeklyTPEEarned += taskTPE;
+                }
+                // Ensure dataset.affectsWeeklyCap is checked as a string 'true'
+                if (tpeInput.dataset.affectsWeeklyCap === 'true') {
+                    hasWelfareTask = true;
+                }
             });
 
+            // Determine effective weekly cap
+            const effectiveWeeklyCap = hasWelfareTask ? 10 : 12;
+
             // Calculate spent TPE from attributes (current to updated)
-            // And calculate totalCurrentTPE (base 35 to updated)
+            // And calculate tpeInvestedInUpdatedAttributes (base 35 to updated)
             document.querySelectorAll('.attribute-row').forEach(row => {
                 const current = parseInt(row.querySelector('.current-value').value) || 35;
                 const updated = parseInt(row.querySelector('.updated-value').value) || 35;
@@ -352,31 +528,195 @@
 
                 // Total TPE invested to reach the *updated* attribute value from base 35
                 if (updated > 35) { // Only count TPE if the attribute is above 35
-                    totalCurrentTPE += calculateTPE(35, updated); 
+                    tpeInvestedInUpdatedAttributes += calculateTPE(35, updated); 
                 }
             });
 
-            const totalAvailable = initialBank + earnedTPE;
-            const newBank = totalAvailable - spentTPE;
+            const newBank = initialBank + earnedTPE - spentTPE;
+            const totalPlayerTPE = tpeInvestedInUpdatedAttributes + newBank; // New definition of Total Player TPE
 
             // Update displays
             document.getElementById('totalEarned').textContent = `TPE Earned: ${earnedTPE}`;
             document.getElementById('totalSpent').textContent = `TPE Spent: ${spentTPE}`;
-            document.getElementById('totalCurrentTPE').textContent = `Current Player TPE: ${totalCurrentTPE}`; // Display calculated value based on updated attributes
+            document.getElementById('totalCurrentTPE').textContent = `Current Player TPE: ${totalPlayerTPE}`; // Display calculated value based on updated attributes + new bank
             document.getElementById('totalBank').textContent = `New Bank: ${newBank}`;
             document.getElementById('totalBank').className = 'total-tpe ' + (newBank >= 0 ? 'valid-tpe' : 'invalid-tpe');
+
+            // Update Weekly Capped TPE display and color
+            const weeklyCappedTPEElement = document.getElementById('totalCappedWeeklyTPE');
+            weeklyCappedTPEElement.textContent = `Weekly Capped TPE: ${cappedWeeklyTPEEarned} / ${effectiveWeeklyCap}`;
+            if (cappedWeeklyTPEEarned > effectiveWeeklyCap) {
+                weeklyCappedTPEElement.className = 'total-tpe invalid-tpe';
+                document.getElementById('generateButton').disabled = true; // Disable button
+                document.getElementById('generateButton').style.backgroundColor = '#c62828'; // Red for invalid
+            } else {
+                weeklyCappedTPEElement.className = 'total-tpe valid-tpe';
+                document.getElementById('generateButton').disabled = false; // Enable button
+                document.getElementById('generateButton').style.backgroundColor = '#3498db'; // Blue for valid
+            }
         }
 
-        // Load stats from pasted text
+        // Function to show custom error modal
+        function showErrorMessage(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorModal').style.display = 'block';
+        }
+
+        // Function to fetch and parse CSV from Google Sheet
+        async function fetchPlayers() {
+            const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTE5Hh1LpmgLOO0KcDlFsv1FUY-BfvpjKWUm3MgHF1pfwWwlxTMfZcX5nNGvCKe12mKvxPRi5-7CTiE/pub?gid=1416269187&single=true&output=csv';
+            const playerSelect = document.getElementById('playerSelect');
+
+            try {
+                const response = await fetch(csvUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}. Please ensure the Google Sheet is published to the web as a CSV file for public access.`);
+                }
+                const csvText = await response.text();
+
+                const lines = csvText.split('\n').filter(line => line.trim() !== '');
+                if (lines.length === 0) {
+                    playerSelect.innerHTML = '<option value="">No data found</option>';
+                    console.error("No data found in CSV.");
+                    return;
+                }
+
+                const headers = lines[0].split(',').map(h => h.trim());
+                const players = [];
+
+                for (let i = 1; i < lines.length; i++) {
+                    const values = lines[i].split(',').map(v => v.trim());
+                    const player = {};
+                    headers.forEach((header, index) => {
+                        player[header] = values[index];
+                    });
+                    
+                    // Combine First Name and Last Name for the dropdown
+                    if (player['First Name'] && player['Last Name']) {
+                        player.fullName = `${player['First Name']} ${player['Last Name']}`.trim();
+                    } else if (player['First Name']) { // Handle cases with only a first name
+                        player.fullName = player['First Name'].trim();
+                    } else {
+                        player.fullName = ''; // Default if no name parts are found
+                    }
+
+                    // Only add player if a full name was successfully created
+                    if (player.fullName !== '') {
+                        players.push(player);
+                    }
+                }
+
+                allPlayersData = players;
+                populatePlayerDropdown(allPlayersData); // Pass all data initially
+
+            } catch (error) {
+                console.error("Error fetching or parsing player data:", error);
+                playerSelect.innerHTML = '<option value="">Failed to load players</option>';
+                showErrorMessage(`Failed to load player data from Google Sheet: ${error.message}`);
+            }
+        }
+
+        // Function to populate the player selection dropdown (now accepts an array of players)
+        function populatePlayerDropdown(playersToDisplay) {
+            const playerSelect = document.getElementById('playerSelect');
+            playerSelect.innerHTML = '<option value="">-- Select Player --</option>'; // Clear existing options
+
+            // Sort players alphabetically by full name
+            playersToDisplay.sort((a, b) => a.fullName.localeCompare(b.fullName));
+
+            playersToDisplay.forEach(player => {
+                const option = document.createElement('option');
+                option.value = player.fullName; // Use the combined full name
+                option.textContent = player.fullName;
+                playerSelect.appendChild(option);
+            });
+        }
+
+        // Function to filter players based on search input
+        function filterPlayers() {
+            const searchTerm = document.getElementById('playerSearch').value.toLowerCase();
+            const filteredPlayers = allPlayersData.filter(player => 
+                player.fullName.toLowerCase().includes(searchTerm)
+            );
+            populatePlayerDropdown(filteredPlayers);
+        }
+
+        // Function to load selected player's stats into the form
+        function loadSelectedPlayerStats() {
+            const playerSelect = document.getElementById('playerSelect');
+            const selectedPlayerName = playerSelect.value;
+
+            if (!selectedPlayerName) {
+                // Clear all fields if no player is selected
+                document.getElementById('initialBank').value = 0;
+                document.querySelectorAll('.attribute-row').forEach(row => {
+                    row.querySelector('.current-value').value = 35;
+                    row.querySelector('.updated-value').value = 35;
+                });
+                // Clear all tasks
+                document.getElementById('tasksContainer').innerHTML = '';
+                updateTotals();
+                initialPlayerTPEFromLoad = 0; // Reset initial TPE
+                return;
+            }
+
+            // Find player using the combined full name
+            const selectedPlayer = allPlayersData.find(p => p.fullName === selectedPlayerName);
+
+            if (selectedPlayer) {
+                const loadedInitialBank = parseInt(selectedPlayer['Banked TPE']) || 0;
+                document.getElementById('initialBank').value = loadedInitialBank;
+
+                // Calculate TPE from initial attributes
+                let tpeFromInitialAttributes = 0;
+                document.querySelectorAll('.attribute-row').forEach(row => {
+                    const attrNameElement = row.querySelector('.attribute-name');
+                    const displayAttrName = attrNameElement.textContent;
+                    let sheetHeaderName = displayAttrName;
+                    if (selectedPlayer[displayAttrName] !== undefined) {
+                        sheetHeaderName = displayAttrName;
+                    } else if (reverseAttributeMap[displayAttrName]) {
+                        sheetHeaderName = reverseAttributeMap[displayAttrName]; 
+                    }
+                    
+                    const valueFromSheet = parseInt(selectedPlayer[sheetHeaderName]);
+                    const currentValueInput = row.querySelector('.current-value');
+                    const updatedValueInput = row.querySelector('.updated-value');
+
+                    if (!isNaN(valueFromSheet)) {
+                        currentValueInput.value = valueFromSheet;
+                        updatedValueInput.value = valueFromSheet; // Set updated to current initially
+                        if (valueFromSheet > 35) {
+                            tpeFromInitialAttributes += calculateTPE(35, valueFromSheet);
+                        }
+                    } else {
+                        currentValueInput.value = 35;
+                        updatedValueInput.value = 35;
+                    }
+                });
+                
+                // Set initialPlayerTPEFromLoad based on initial attributes + initial bank
+                initialPlayerTPEFromLoad = tpeFromInitialAttributes + loadedInitialBank;
+
+                // Clear existing tasks when loading a new player
+                document.getElementById('tasksContainer').innerHTML = '';
+                updateTotals(); // Recalculate TPE after loading stats
+            } else {
+                console.error("Selected player data not found in fetched data.");
+            }
+        }
+
+
+        // Load stats from pasted text (kept as an alternative method)
         document.getElementById('loadStatsButton').addEventListener('click', function() {
             const playerStatsText = document.getElementById('playerStatsInput').value;
             const lines = playerStatsText.split('\n');
             const attributeValues = {};
+            let pastedInitialBank = 0;
 
             lines.forEach(line => {
                 let match;
                 // Regex to handle "AttributeName (Abbreviation): Value" or "AttributeName: Value"
-                // The attribute name part is made non-greedy to correctly capture names before optional parentheses.
                 match = line.match(/^([a-zA-Z\s]+?)(?:\s*\(.+\))?:\s*(\d+)/);
                 if (match) {
                     let attrName = match[1].trim(); 
@@ -395,11 +735,13 @@
                 // Match for "Banked TPE: 0"
                 match = line.match(/Banked TPE:\s*(\d+)/);
                 if (match) {
-                    document.getElementById('initialBank').value = parseInt(match[1]);
+                    pastedInitialBank = parseInt(match[1]);
+                    document.getElementById('initialBank').value = pastedInitialBank;
                 }
             });
 
             // Update the 'current-value' inputs
+            let tpeFromInitialAttributes = 0;
             document.querySelectorAll('.attribute-row').forEach(row => {
                 const attrNameElement = row.querySelector('.attribute-name');
                 const attrName = attrNameElement.textContent; 
@@ -410,12 +752,20 @@
                     currentValueInput.value = attributeValues[attrName];
                     // Also update the updated-value to match the current value initially
                     updatedValueInput.value = attributeValues[attrName];
+                    if (attributeValues[attrName] > 35) {
+                        tpeFromInitialAttributes += calculateTPE(35, attributeValues[attrName]);
+                    }
                 } else {
-                    // If an attribute is not found in the pasted text, ensure its current and updated values are reset to 35
+                    // If value not found or invalid, reset to default
                     currentValueInput.value = 35;
                     updatedValueInput.value = 35;
                 }
             });
+            // Clear existing tasks when loading from paste
+            document.getElementById('tasksContainer').innerHTML = '';
+
+            // Calculate and store initialPlayerTPEFromLoad immediately after loading current stats
+            initialPlayerTPEFromLoad = tpeFromInitialAttributes + pastedInitialBank;
 
             updateTotals(); // Recalculate all TPE summaries after loading stats
         });
@@ -428,12 +778,17 @@
             
             // Add tasks
             document.querySelectorAll('.task-row').forEach(row => {
-                const name = row.querySelector('.task-name').value;
+                const nameSelect = row.querySelector('.task-name-select');
+                const name = nameSelect ? nameSelect.value : ''; // Get from select
                 const link = row.querySelector('.task-link').value;
                 const tpe = row.querySelector('.task-tpe').value;
                 
+                // Find the task data to get capped status
+                const selectedTask = taskData.find(task => task.name === name);
+                const cappedStatus = selectedTask ? (selectedTask.capped ? ' (Capped)' : ' (Uncapped)') : '';
+                
                 if (name && link && tpe) {
-                    bbcode += `[url=${link}]${name} (+${tpe} TPE)[/url]\n`;
+                    bbcode += `[url=${link}]${name} (+${tpe} TPE)${cappedStatus}[/url]\n`;
                 }
             });
 
@@ -442,9 +797,9 @@
             // Add attributes
             document.querySelectorAll('.attribute-row').forEach(row => {
                 const attr = row.querySelector('.attribute-name').textContent;
-                const current = parseInt(row.querySelector('.current-value').value); // Parse to int for calculation
-                const updated = parseInt(row.querySelector('.updated-value').value); // Parse to int for calculation
-                const tpeCostForThisAttribute = calculateTPE(current, updated); // Calculate individual TPE cost
+                const current = parseInt(row.querySelector('.current-value').value); 
+                const updated = parseInt(row.querySelector('.updated-value').value); 
+                const tpeCostForThisAttribute = calculateTPE(current, updated); 
 
                 if (current !== updated) {
                     bbcode += `${attr}: [color=green][b]${current} → ${updated}[/b][/color] (+${tpeCostForThisAttribute} TPE)\n`;
@@ -455,15 +810,15 @@
             const initialBank = parseInt(document.getElementById('initialBank').value) || 0;
             const earned = parseInt(document.getElementById('totalEarned').textContent.split(': ')[1]);
             const spent = parseInt(document.getElementById('totalSpent').textContent.split(': ')[1]);
-            // Read Total Current TPE directly from the display element (which is now calculated)
             const totalCurrent = parseInt(document.getElementById('totalCurrentTPE').textContent.split(': ')[1]); 
-            const newBank = initialBank + earned - spent;
+            const newBank = parseInt(document.getElementById('totalBank').textContent.split(': ')[1]); 
             
             bbcode += `\n[b]Initial Bank:[/b] ${initialBank}\n`;
             bbcode += `[b]TPE Earned:[/b] ${earned}\n`;
             bbcode += `[b]TPE Spent:[/b] ${spent}\n`;
-            bbcode += `[b]Total Player TPE:[/b] ${totalCurrent}\n`; // Add Total Current TPE to BBCode
-            bbcode += `[b]New Bank:[/b] ${initialBank} + ${earned} - ${spent} = ${newBank}\n`;
+            // Show original and new player TPE
+            bbcode += `[b]Total Player TPE:[/b] ${initialPlayerTPEFromLoad} → ${totalCurrent}\n`; 
+            bbcode += `[b]New Bank:[/b] ${newBank}\n`; 
 
             document.getElementById('bbcode-output').textContent = bbcode;
             document.getElementById('outputModal').style.display = 'block';
@@ -473,7 +828,6 @@
         document.querySelectorAll('.current-value').forEach(input => {
             input.addEventListener('input', function() {
                 const updated = this.closest('.attribute-row').querySelector('.updated-value');
-                // Ensure updated value is not less than current value
                 if (parseInt(updated.value) < parseInt(this.value)) {
                     updated.value = this.value;
                 }
@@ -481,19 +835,25 @@
             });
         });
 
-        // Add event listeners to new task inputs
-        document.getElementById('tasksContainer').addEventListener('input', function(event) {
-            if (event.target.classList.contains('task-tpe')) {
-                updateTotals();
-            }
-        });
-
         document.querySelectorAll('input').forEach(input => {
             input.addEventListener('input', updateTotals);
         });
 
-        // Initial setup
-        updateTotals();
+        // Add event listener for the new player select dropdown and search input
+        document.addEventListener('DOMContentLoaded', () => {
+            const playerSelect = document.getElementById('playerSelect');
+            const playerSearch = document.getElementById('playerSearch');
+
+            if (playerSelect) {
+                playerSelect.addEventListener('change', loadSelectedPlayerStats);
+            }
+            if (playerSearch) {
+                playerSearch.addEventListener('input', filterPlayers); // Live search
+            }
+            // Initial fetch on page load
+            fetchPlayers();
+            updateTotals(); // Initial calculation
+        });
     </script>
 </body>
 </html>
